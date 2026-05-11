@@ -1,5 +1,26 @@
-groq>=0.9.0
-streamlit>=1.35.0
-plotly>=5.20.0
+# ──────────────────────────────────────────────────────────────────────────────
+# PSIA Seaweed Industry Analytics Dashboard — v7.0
+# Requirements file
+#
+# Install:
+#   pip install -r requirements.txt
+#
+# Run:
+#   streamlit run psia_dashboard_v7.py
+# ──────────────────────────────────────────────────────────────────────────────
+
+# Core dashboard framework
+streamlit>=1.32.0
+
+# Data handling
 pandas>=2.0.0
 numpy>=1.26.0
+
+# Visualisation
+plotly>=5.18.0
+
+# AI / LLM — Groq API client (llama-3.3-70b-versatile)
+groq>=0.9.0
+
+# RAG knowledge base — TF-IDF retrieval
+scikit-learn>=1.3.0
