@@ -2029,19 +2029,23 @@ RAG_DOCS = [
     },
     {
         "id": "fao_top_aquaculture_2017",
-        "title": "Top Species Groups in Global Aquaculture 2017 (FAO)",
+        "title": "Top Species Groups in Global Aquaculture 2017 (FAO) — ALL species, not seaweed only",
         "text": (
-            "FAO factsheet on top 10 species groups in global aquaculture (2017) shows: "
-            "Total global aquaculture production was 112 million tonnes valued at USD 250 billion. "
-            "Seaweeds ranked as key groups: Brown seaweeds were #3 by quantity (12.30%), led by "
-            "Japanese kelp (Saccharina japonica), which was the #1 ASFIS species item by quantity "
-            "globally. Red seaweeds were #2 by quantity (15.42%), led by Eucheuma seaweeds and "
-            "Gracilaria seaweeds. In 2017, 608 species items had been farmed globally since 1950; "
-            "424 were actively farmed in 2017 (vs 254 in 1990), demonstrating rapid diversification. "
-            "Carps and cyprinids were #1 by quantity (25%), while Atlantic salmon was #2 by value. "
-            "Marine shrimps/prawns were #2 overall by value at 13.71%. Seaweeds as a group "
-            "collectively represent the largest share of aquaculture by tonnage when combined "
-            "with molluscs and freshwater fish. China dominates most aquaculture categories."
+            "⚠️ IMPORTANT: The 112 million tonnes figure in this chunk refers to ALL aquaculture "
+            "species combined (fish, shellfish, seaweed, freshwater — everything). "
+            "Do NOT use it when asked about seaweed production. "
+            "Seaweed-specific global production in 2017 was approximately 33.7 million tonnes "
+            "(from FAO FishStat seaweed-only data shown on the dashboard). "
+            "FAO factsheet on top 10 species groups in TOTAL global aquaculture (all species, 2017): "
+            "Total ALL-SPECIES aquaculture production was 112 million tonnes valued at USD 250 billion. "
+            "Seaweeds as a subset: Brown seaweeds were #3 by quantity (12.30% of all aquaculture "
+            "= ~13.8M tonnes), led by Japanese kelp (Saccharina japonica). "
+            "Red seaweeds were #2 by quantity (15.42% = ~17.3M tonnes), led by Eucheuma and Gracilaria. "
+            "Combined seaweed share of total aquaculture ≈ 27.7% = ~31M tonnes. "
+            "In 2017, 608 aquaculture species items had been farmed globally since 1950; "
+            "424 were actively farmed in 2017 (vs 254 in 1990). "
+            "Carps and cyprinids were #1 by all-aquaculture quantity (25%); "
+            "Atlantic salmon was #2 by value. China dominates most categories."
         ),
         "source": "Cai, Zhou, Yan, Lucente & Lagana, FAO / Chinese Academy of Fishery Sciences, 2017",
     },
@@ -2066,21 +2070,22 @@ RAG_DOCS = [
     },
     {
         "id": "canada_aquaculture_snapshot_2024",
-        "title": "2024 Canadian Aquaculture Industry Data Snapshot",
+        "title": "2024 Canadian Aquaculture Industry Data Snapshot — ALL aquaculture species",
         "text": (
+            "⚠️ IMPORTANT: Figures below cover ALL Canadian aquaculture (salmon, shellfish, "
+            "trout, etc.) — NOT seaweed only. "
             "The 2024 Aquaculture Industry Data Snapshot (aquaculture.ca/RIAS Inc.) shows: "
-            "Canadian aquaculture sector grew 9.8% in 2024 to 160,318 tonnes production, though "
-            "still 20% below 2016 peak (200,804 tonnes). Total economic output: $6 billion "
-            "(production $3.28B + processing $2.75B). GDP contribution: $2.27 billion. "
-            "Jobs: 18,074 full-time (9,386 production; 8,688 processing). Farmed salmon "
-            "dominated at 69.3% of production and 84.4% of value; salmon production was "
-            "109,048 tonnes in 2024. BC farmed salmon: 53,816 tonnes (up slightly, but still "
-            "40% below 2015 peak due to ongoing policy uncertainty). Atlantic Canada farmed "
-            "salmon: 55,232 tonnes (up 17.7%). Farmed shellfish declined 2.1% to 37,904 tonnes. "
-            "Exports of farmed seafood: $970 million (up 7.3%), but 18.8% below 2019 peak. "
-            "Canada lags behind Norway and Chile — much smaller countries that have seen strong "
-            "sustained aquaculture growth. Seaweed is an emerging opportunity within this broader "
-            "aquaculture context."
+            "Canadian ALL-SPECIES aquaculture grew 9.8% in 2024 to 160,318 tonnes total. "
+            "Total economic output for all aquaculture: $6 billion "
+            "(production $3.28B + processing $2.75B). GDP: $2.27 billion. "
+            "Jobs across all aquaculture: 18,074 full-time. "
+            "Farmed salmon dominated at 69.3% of all-aquaculture production; "
+            "salmon production was 109,048 tonnes in 2024. "
+            "BC farmed salmon: 53,816 tonnes. Atlantic Canada: 55,232 tonnes (up 17.7%). "
+            "Farmed shellfish: 37,904 tonnes. Exports: $970 million (up 7.3%). "
+            "Seaweed is a small but growing component — approximately 97 licensed seaweed "
+            "operations covering 3,340 ha as of 2024, with seaweed-specific value ~CAD 50 million. "
+            "Canada lags Norway and Chile in total aquaculture scale."
         ),
         "source": "RIAS Inc. / Aquaculture.ca, 2024 Aquaculture Industry Data Snapshot",
     },
@@ -2191,7 +2196,17 @@ def build_system_prompt(query: str = "", is_uc2: bool = False) -> str:
         "embedded in a seaweed analytics dashboard. Answer questions about the "
         "global seaweed industry, Canadian market opportunities, BC regulations, "
         "social license to operate, production costs, First Nations aquaculture, "
-        "and PSIA initiatives. "
+        "and PSIA initiatives.\n\n"
+        "== CRITICAL DATA DISAMBIGUATION ==\n"
+        "This dashboard tracks SEAWEED-ONLY production from FAO FishStat. "
+        "When a user asks about 'production', 'global production', or 'total production', "
+        "they always mean SEAWEED-ONLY — NOT total global aquaculture (all species). "
+        "NEVER cite the 112 million tonnes all-species figure as seaweed production. "
+        "Global seaweed-only production in 2017 was ~33.7 million tonnes. "
+        "Global seaweed-only production in 2024 was approximately 40 million tonnes. "
+        "The 112M tonne figure (FAO 2017) = ALL aquaculture combined (fish + shellfish + "
+        "seaweed + freshwater). If you cite it, always label it explicitly as "
+        "'total all-species aquaculture' to prevent confusion.\n\n"
         "Be concise and data-specific. Keep answers to 3–5 sentences for simple questions. "
         "Always cite your source when using specific numbers."
     )
@@ -2215,21 +2230,33 @@ def build_system_prompt(query: str = "", is_uc2: bool = False) -> str:
                     .sort_values(ascending=False))
             ig_lines = "\n".join([
                 f"  {k}: {v/ig_s.sum()*100:.1f}%" for k, v in ig_s.items()])
+            # Build year-by-year historical lookup for specific year questions
+            hist_years = [y for y in [2000,2005,2010,2015,2017,2018,2019,2020,2021,2022,LY]
+                          if y in fgp["period"].values and fgp[fgp["period"]==y]["value"].sum() > 0]
+            hist_lines = "\n".join([
+                f"  {y}: {fgp[fgp['period']==y]['value'].sum()/1e6:.2f}M t"
+                for y in sorted(hist_years)])
             base += f"""
 
-== LIVE DASHBOARD DATA ({year_range[0]}–{year_range[1]}) ==
-Production ({LY}): {prod_tot/1e6:.2f}M t · YoY {yoy_prod:.1f}% · CAGR {cagr_prod:.1f}%
-  Farmed: {aq_tot/1e6:.2f}M t · Wild: {wc_tot/1e6:.3f}M t
-  ASFIS species: {sp_total} (farmed:{sp_cult}, wild:{sp_wild})
-  Avg price/kg: ${avg_price_kg:.2f}
-Value ({LY}): USD ${val_tot/1e6:.1f}B · YoY {yoy_val:.1f}%
-Continental share:
+== LIVE DASHBOARD DATA — SEAWEED ONLY ({year_range[0]}–{year_range[1]}) ==
+All figures are SEAWEED-SPECIFIC from FAO FishStat. Do NOT mix with all-species aquaculture.
+
+Seaweed production ({LY}): {prod_tot/1e6:.2f}M t · YoY {yoy_prod:.1f}% · CAGR {cagr_prod:.1f}%
+  Farmed seaweed: {aq_tot/1e6:.2f}M t ({aq_tot/prod_tot*100:.1f}% of seaweed total)
+  Wild seaweed:   {wc_tot/1e6:.3f}M t ({wc_tot/prod_tot*100:.1f}% of seaweed total)
+  ASFIS seaweed species: {sp_total} (farmed:{sp_cult}, wild:{sp_wild})
+  Avg seaweed price/kg: ${avg_price_kg:.2f}
+Seaweed value ({LY}): USD ${val_tot/1e6:.1f}B · YoY {yoy_val:.1f}%
+Continental share of seaweed production:
 {cont_lines}
-Top 5 species:
+Top 5 seaweed species by volume:
 {sp_lines}
-Income group distribution:
+Income group share of seaweed production:
 {ig_lines}
-Seaweed farms (sim): 97 operations · Farm area: 3,340 ha
+Canadian seaweed farms (estimated): 97 operations · 3,340 ha
+
+Historical seaweed-only production (FAO FishStat, selected years):
+{hist_lines}
 """
     return base
 
