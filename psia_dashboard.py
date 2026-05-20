@@ -1,5 +1,5 @@
 """
-PSIA Seaweed Industry Analytics Dashboard  — v10.0
+PSIA Seaweed Industry Analytics Dashboard  — v17.0
 ====================================================
   CHANGES FROM v9:
   - Tab 4 "🔬 Advanced Analytics" added with 6 remaining KPIs:
