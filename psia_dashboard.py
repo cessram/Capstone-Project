@@ -1,5 +1,5 @@
 """
-PSIA Seaweed Industry Analytics Dashboard  — v10.0
+PSIA Seaweed Industry Analytics Dashboard  — v19.0
 ====================================================
   CHANGES FROM v9:
   - Tab 4 "🔬 Advanced Analytics" added with 6 remaining KPIs:
@@ -358,6 +358,53 @@ section.main,
 [data-testid="stExpander"] summary span {{ font-size: 14px !important; font-weight: 600 !important; color: #1A1A1A !important; }}
 [data-baseweb="tab"] button p,
 [data-baseweb="tab"] button {{ font-size: 14px !important; font-weight: 600 !important; color: #333333 !important; }}
+
+/* ── Sidebar: high-specificity label overrides (beats Streamlit theme) ────── */
+[data-testid="stSidebar"] [data-testid="stWidgetLabel"] p,
+[data-testid="stSidebar"] [data-testid="stWidgetLabel"],
+[data-testid="stSidebar"] [data-testid="stSlider"]     > div > label,
+[data-testid="stSidebar"] [data-testid="stMultiSelect"] > label,
+[data-testid="stSidebar"] [data-testid="stSelectbox"]  > label,
+[data-testid="stSidebar"] [class*="Label"] p,
+[data-testid="stSidebar"] [class*="Label"] {{
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    color: #FFFFFF !important;
+    opacity: 1 !important;
+    letter-spacing: 0.15px !important;
+}}
+/* Slider thumb value bubble */
+[data-testid="stSidebar"] [data-testid="stThumbValue"] {{
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    color: #9FE1CB !important;
+    opacity: 1 !important;
+}}
+/* Slider min/max tick labels */
+[data-testid="stSidebar"] [data-testid="stTickBarMin"],
+[data-testid="stSidebar"] [data-testid="stTickBarMax"] {{
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    color: #9FE1CB !important;
+    opacity: 1 !important;
+}}
+
+/* ── Chat suggestion buttons: white text on teal (dark mode makes them black) */
+[data-testid="baseButton-secondary"],
+.stButton > button[kind="secondary"] {{
+    background-color: {C['t600']} !important;
+    color: #FFFFFF !important;
+    border: 1px solid {C['t400']} !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    text-align: left !important;
+}}
+[data-testid="baseButton-secondary"]:hover,
+.stButton > button[kind="secondary"]:hover {{
+    background-color: {C['t400']} !important;
+    color: #FFFFFF !important;
+    border-color: {C['t300']} !important;
+}}
 </style>
 """, unsafe_allow_html=True)
 
@@ -405,21 +452,25 @@ sim_perm, sim_social = build_simulated()
 # SIDEBAR
 # ─────────────────────────────────────────────────────────────────────────────
 with st.sidebar:
-    st.markdown(f"""
-    <div style="text-align:center;padding:20px 0 14px;">
-      <div style="font-size:36px;margin-bottom:8px;">🌿</div>
-      <div style="font-family:Georgia,serif;font-size:20px;font-weight:700;
-                  letter-spacing:0.3px;">PSIA Dashboard</div>
-      <div style="font-size:11px;color:#FFFFFF;margin-top:4px;
-                  letter-spacing:0.4px;opacity:0.9;">Pacific Seaweed Industry Association</div>
+    st.markdown("""
+    <div style="text-align:center;padding:24px 8px 18px;
+                border-bottom:1px solid rgba(255,255,255,0.18);margin-bottom:16px;">
+      <div style="font-size:42px;margin-bottom:10px;line-height:1;">🌿</div>
+      <div style="font-family:Georgia,serif;font-size:22px;font-weight:700;
+                  color:#FFFFFF !important;letter-spacing:0.3px;line-height:1.2;">
+        PSIA Dashboard
+      </div>
+      <div style="font-size:12px;color:#9FE1CB;margin-top:8px;
+                  letter-spacing:0.5px;line-height:1.5;font-weight:400;">
+        Pacific Seaweed Industry Association
+      </div>
     </div>""", unsafe_allow_html=True)
 
-    st.markdown("---")
     st.markdown(
         "<div style='font-size:11px;font-weight:800;letter-spacing:1.6px;"
         "text-transform:uppercase;color:#FFFFFF;margin-bottom:14px;"
         "padding:0 0 6px;border-bottom:1px solid rgba(255,255,255,0.20);'>"
-        "Dashboard Filters</div>",
+        "📊 Dashboard Filters</div>",
         unsafe_allow_html=True)
 
     y_min = int(gp["period"].min()) if data_ok else 1950
@@ -435,11 +486,15 @@ with st.sidebar:
 
     st.markdown("---")
     st.markdown(
-        "<div style='font-size:13px;color:#FFFFFF;line-height:2.2;"
-        "font-family:Inter,Arial,sans-serif;font-weight:500;'>"
+        "<div style='background:rgba(255,255,255,0.08);border-radius:8px;"
+        "padding:12px 14px;border:1px solid rgba(255,255,255,0.15);margin-top:4px;'>"
+        "<div style='font-size:10px;font-weight:800;letter-spacing:1.4px;"
+        "text-transform:uppercase;color:#9FE1CB;margin-bottom:10px;'>Data Sources</div>"
+        "<div style='font-size:14px;color:#FFFFFF;line-height:2.3;font-weight:500;'>"
         "🟢 FAO FishStat — real data<br>"
         "📊 DFO / CIRNAC — estimated<br>"
-        "📅 Data through 2024</div>",
+        "📅 Data through 2024"
+        "</div></div>",
         unsafe_allow_html=True)
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -2658,14 +2713,14 @@ with _chat_col:
     }
 
     st.markdown(
-        '<div style="background:#F7F7F7;padding:8px 14px 4px;'
+        '<div style="background:#E8F5F0;padding:9px 14px 5px;'
         'border-left:1px solid #CCCCCC;border-right:1px solid #CCCCCC;">'
-        '<span style="font-size:12px;font-weight:600;color:#333333;'
-        'font-family:Inter,Arial,sans-serif;">Try asking:</span>'
+        '<span style="font-size:13px;font-weight:700;color:#085041;'
+        'font-family:Inter,Arial,sans-serif;letter-spacing:0.2px;">💬 Try asking:</span>'
         '</div>', unsafe_allow_html=True)
 
     st.markdown(
-        '<div style="background:#F7F7F7;padding:0 10px 8px;'
+        '<div style="background:#E8F5F0;padding:4px 10px 10px;'
         'border-left:1px solid #CCCCCC;border-right:1px solid #CCCCCC;">',
         unsafe_allow_html=True)
     for sugg in SUGG[is_uc2]:
