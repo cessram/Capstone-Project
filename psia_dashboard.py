@@ -1,5 +1,5 @@
 """
-PSIA Seaweed Industry Analytics Dashboard  — v15.0
+PSIA Seaweed Industry Analytics Dashboard  — v16.0
 ====================================================
   CHANGES FROM v9:
   - Tab 4 "🔬 Advanced Analytics" added with 6 remaining KPIs:
@@ -40,7 +40,7 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-GROQ_API_KEY = "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"
+GROQ_API_KEY = "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
 
 # ─────────────────────────────────────────────────────────────────────────────
 # FLOAT HELPER  — zero external packages, pure CSS :has() injection
@@ -105,6 +105,8 @@ LEGEND_TOP = dict(
     font=dict(size=12, color="#111111"),
     bgcolor="rgba(255,255,255,0.95)",
     bordercolor="#CCCCCC", borderwidth=1,
+    tracegroupgap=0,        # prevents Plotly 5.x "undefined" legend group titles
+    groupclick="toggleitem", # cleaner legend click behaviour
 )
 LEGEND_BOTTOM = dict(
     orientation="h", y=-0.44, x=0,
@@ -112,6 +114,8 @@ LEGEND_BOTTOM = dict(
     bgcolor="rgba(255,255,255,0.95)",
     bordercolor="#CCCCCC", borderwidth=1,
     title_text="",
+    tracegroupgap=0,
+    groupclick="toggleitem",
 )
 
 def base_layout(height=320, margin=None):
@@ -152,6 +156,8 @@ def style_axes(fig, xtitle="", ytitle="", y2title="", y_range=None):
         )
     # Ensure ALL annotations (subplot titles, vlines, etc.) are dark
     fig.update_annotations(font=dict(size=12, color="#111111"))
+
+    fig.update_traces(legendgrouptitle_text="")
     return fig
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -159,44 +165,70 @@ def style_axes(fig, xtitle="", ytitle="", y2title="", y_range=None):
 # ─────────────────────────────────────────────────────────────────────────────
 st.markdown(f"""
 <style>
-/* ── Base — intentionally NO !important so chat white rules always win ────── */
+/* ════════════════════════════════════════════════════════════════════════
+   PSIA DASHBOARD — Force light theme for all main content
+   Overrides Streamlit dark mode so text is always readable.
+   Chat panel keeps its own dark background via specific class rules.
+   ════════════════════════════════════════════════════════════════════════ */
+
+/* ── Force white background across ALL main Streamlit containers ──────── */
+[data-testid="stApp"], .stApp {{
+    background-color: #FFFFFF !important;
+}}
+[data-testid="stAppViewContainer"],
+[data-testid="stMain"],
+section.main,
+.main .block-container,
+[data-testid="stMainBlockContainer"] {{
+    background-color: #FFFFFF !important;
+    color: #1A1A1A !important;
+}}
+
+/* ── Markdown containers: transparent bg, dark text ─────────────────── */
+[data-testid="stMarkdownContainer"] {{
+    background-color: transparent !important;
+    color: #1A1A1A !important;
+}}
+[data-testid="stMarkdownContainer"] p,
+[data-testid="stMarkdownContainer"] li,
+[data-testid="stMarkdownContainer"] span,
+[data-testid="stMarkdownContainer"] div {{
+    color: #1A1A1A !important;
+    background-color: transparent !important;
+}}
+
+/* ── Base typography ────────────────────────────────────────────────── */
 html, body, [class*="css"] {{
     font-family: Inter, Arial, sans-serif;
     font-size: 14px;
     color: #1A1A1A;
+    background-color: #FFFFFF;
     -webkit-font-smoothing: antialiased;
 }}
-/* General paragraph + list text */
 .stMarkdown p, .stMarkdown li {{
-    font-size: 14px;
-    color: #1A1A1A;
+    font-size: 14px !important;
+    color: #1A1A1A !important;
     line-height: 1.65;
 }}
-/* Cover all div text in main content — prevents Streamlit overriding plain divs */
-.stMarkdown div {{ color: #1A1A1A; }}
-[data-testid="stCaptionContainer"] p {{ font-size: 13px; color: #444444 !important; }}
-/* #### headings — !important needed; Streamlit's internal h4 rule wins otherwise */
+.stMarkdown div {{ color: #1A1A1A !important; background: transparent !important; }}
+[data-testid="stCaptionContainer"] p {{ font-size: 13px !important; color: #444444 !important; }}
 .stMarkdown h4 {{ font-size: 17px !important; font-weight: 700 !important; color: #1A1A1A !important; }}
 .stMarkdown h3 {{ font-size: 19px !important; font-weight: 700 !important; color: #1A1A1A !important; }}
 .stMarkdown h2 {{ font-size: 21px !important; font-weight: 700 !important; color: #1A1A1A !important; }}
 [data-testid="stExpander"] summary span {{ font-size: 14px !important; font-weight: 600 !important; color: #1A1A1A !important; }}
-[data-testid="stDataFrame"] *  {{ font-size: 13px !important; color: #1A1A1A !important; }}
+[data-testid="stDataFrame"] *  {{ font-size: 13px !important; color: #1A1A1A !important; background-color: transparent !important; }}
 [data-testid="stAlert"] p      {{ font-size: 14px !important; color: #1A1A1A !important; }}
 .stRadio label, .stSelectbox label, .stSlider label,
 .stMultiSelect label, .stCheckbox label {{
-    font-size: 14px; color: #1A1A1A; font-weight: 500;
+    font-size: 14px !important; color: #1A1A1A !important; font-weight: 500 !important;
 }}
 [data-baseweb="select"] span,
 [data-baseweb="radio"] label,
-[data-baseweb="option"] {{ font-size: 14px; color: #1A1A1A; }}
+[data-baseweb="option"] {{ font-size: 14px !important; color: #1A1A1A !important; }}
 
-/* ── CHAT PANEL — ALL text white on dark background ─────────────────────────
-   Belt-and-suspenders: class selectors + inline styles on every node.
-   !important here because nothing else in our CSS uses !important for text,
-   so these will always win.
-─────────────────────────────────────────────────────────────────────────── */
+/* ── CHAT PANEL — white text on dark background ──────────────────────── */
 .chat-hist-wrap                        {{ color: #FFFFFF !important; }}
-.chat-hist-wrap *                      {{ color: #FFFFFF !important; }}
+.chat-hist-wrap *                      {{ color: #FFFFFF !important; background-color: transparent !important; }}
 .chat-hist-wrap p                      {{ color: #FFFFFF !important; font-size: 14px !important; line-height: 1.6 !important; }}
 .chat-hist-wrap span                   {{ color: #FFFFFF !important; }}
 .chat-hist-wrap div                    {{ color: #FFFFFF !important; }}
@@ -209,7 +241,7 @@ html, body, [class*="css"] {{
 .chat-welcome p                        {{ color: #FFFFFF !important; font-size: 14px !important; }}
 .chat-icon-label                       {{ color: rgba(255,255,255,0.85) !important; }}
 
-/* ── Sidebar ─────────────────────────────────────────────────────────────── */
+/* ── Sidebar ─────────────────────────────────────────────────────────── */
 [data-testid="stSidebar"] {{ background: {C['t900']}; padding-top: 0; }}
 [data-testid="stSidebar"] * {{ color: #FFFFFF !important; }}
 [data-testid="stSidebar"] label {{ font-size: 14px !important; font-weight: 600 !important; color: #FFFFFF !important; }}
@@ -225,45 +257,51 @@ html, body, [class*="css"] {{
 }}
 [data-testid="collapsedControl"] svg {{ fill: #FFFFFF !important; }}
 
-/* ── Tabs ────────────────────────────────────────────────────────────────── */
+/* ── Tabs ────────────────────────────────────────────────────────────── */
+[data-baseweb="tab-panel"],
+[data-baseweb="tab-list"] {{ background-color: #FFFFFF !important; }}
+[data-baseweb="tab-list"] {{ margin-bottom: 4px; }}
 [data-baseweb="tab"] button p,
-[data-baseweb="tab"] button {{ font-size: 14px !important; font-weight: 600 !important; color: #333333 !important; }}
+[data-baseweb="tab"] button {{
+    font-size: 14px !important; font-weight: 600 !important;
+    color: #333333 !important; background: transparent !important;
+}}
 [aria-selected="true"] button p,
 [aria-selected="true"] button {{ color: {C['t600']} !important; font-weight: 700 !important; }}
-[data-baseweb="tab-list"] {{ margin-bottom: 4px; }}
 
-/* ── KPI cards ───────────────────────────────────────────────────────────── */
+/* ── KPI cards ───────────────────────────────────────────────────────── */
 .kpi-card {{
-    background: #FFFFFF; border-radius: 10px; padding: 16px 18px;
-    border: 1px solid #D0D0D0; border-top: 4px solid {C['t400']};
-    margin-bottom: 6px; box-shadow: 0 2px 6px rgba(0,0,0,0.07);
+    background: #FFFFFF !important; border-radius: 10px; padding: 16px 18px;
+    border: 1px solid #D0D0D0 !important; border-top: 4px solid {C['t400']} !important;
+    margin-bottom: 6px; box-shadow: 0 2px 6px rgba(0,0,0,0.08);
 }}
-.kpi-card.amber {{ border-top-color: {C['amber']}; }}
-.kpi-card.coral {{ border-top-color: {C['coral']}; }}
-.kpi-card.blue  {{ border-top-color: {C['blue']};  }}
-.kpi-label  {{ font-size: 11px !important; font-weight: 700 !important; color: #555555 !important; text-transform: uppercase; letter-spacing: 0.9px; margin-bottom: 6px; font-family: Inter, Arial, sans-serif; }}
-.kpi-value  {{ font-size: 26px !important; font-weight: 700 !important; color: #1A1A1A !important; line-height: 1.15; font-family: Georgia, serif; }}
-.kpi-delta  {{ font-size: 12px !important; font-weight: 600 !important; color: #1B6B2F !important; margin-top: 5px; font-family: Inter, Arial, sans-serif; }}
+.kpi-card.amber {{ border-top-color: {C['amber']} !important; }}
+.kpi-card.coral {{ border-top-color: {C['coral']} !important; }}
+.kpi-card.blue  {{ border-top-color: {C['blue']}  !important; }}
+.kpi-label {{ font-size: 11px !important; font-weight: 700 !important; color: #555555 !important; text-transform: uppercase; letter-spacing: 0.9px; margin-bottom: 6px; font-family: Inter, Arial, sans-serif; }}
+.kpi-value {{ font-size: 26px !important; font-weight: 700 !important; color: #1A1A1A !important; line-height: 1.15; font-family: Georgia, serif; }}
+.kpi-delta {{ font-size: 12px !important; font-weight: 600 !important; color: #1B6B2F !important; margin-top: 5px; font-family: Inter, Arial, sans-serif; }}
 .kpi-delta.neg {{ color: #B84020 !important; }}
-.kpi-src    {{ font-size: 11px !important; font-weight: 400 !important; color: #555555 !important; margin-top: 6px; font-family: Inter, Arial, sans-serif; }}
+.kpi-src   {{ font-size: 11px !important; font-weight: 400 !important; color: #555555 !important; margin-top: 6px; font-family: Inter, Arial, sans-serif; }}
 
-/* ── Section headings ────────────────────────────────────────────────────── */
-/* !important required — Streamlit's internal .stMarkdown div rules otherwise win */
+/* ── Section headings ("G4-OP1 — Global Production Trend" etc.) ──────── */
+/* Explicit white bg + dark text: dark mode cannot override either       */
 .sec-head, .stMarkdown .sec-head {{
+    display: block !important;
+    background-color: #FFFFFF !important;
     font-family: Georgia, serif !important;
     font-size: 15px !important;
     font-weight: 700 !important;
     color: #1A1A1A !important;
-    padding-bottom: 6px;
-    border-bottom: 2px solid #DDDDDD;
-    margin-bottom: 12px;
-    display: block;
+    padding: 6px 0 !important;
+    border-bottom: 2px solid #CCCCCC !important;
+    margin-bottom: 12px !important;
 }}
 
-/* ── Tags ────────────────────────────────────────────────────────────────── */
-.tag {{ display: inline-block; background: #E8F5F0; color: #1A1A1A !important; border-radius: 5px; padding: 3px 9px; font-size: 12px !important; font-weight: 600 !important; font-family: Inter, Arial, sans-serif; margin-right: 5px; margin-bottom: 5px; }}
-.tag.sim {{ background: #FFF0D6; color: #5C3900 !important; }}
-.tag.ext {{ background: #E8F0FE; color: #1A3A6B !important; }}
+/* ── Tags ────────────────────────────────────────────────────────────── */
+.tag {{ display: inline-block !important; background: #E8F5F0 !important; color: #1A1A1A !important; border-radius: 5px; padding: 3px 9px; font-size: 12px !important; font-weight: 600 !important; font-family: Inter, Arial, sans-serif; margin-right: 5px; margin-bottom: 5px; }}
+.tag.sim {{ background: #FFF0D6 !important; color: #5C3900 !important; }}
+.tag.ext {{ background: #E8F0FE !important; color: #1A3A6B !important; }}
 </style>
 """, unsafe_allow_html=True)
 
@@ -648,6 +686,8 @@ with tab1:
             fig.update_yaxes(tickfont=AXIS_FONT, gridcolor=GRID_COLOR,
                              linecolor=AXIS_LINE["color"])
             fig.update_annotations(font=dict(size=12, color="#111111"))
+
+            fig.update_traces(legendgrouptitle_text="")
             st.plotly_chart(fig, use_container_width=True)
 
         with r1b:
@@ -675,6 +715,8 @@ with tab1:
             fig2.update_layout(**base_layout(370), legend=LEGEND_TOP)
             fig2 = style_axes(fig2, ytitle="M tonnes")
             fig2.update_annotations(font=dict(size=12, color="#111111"))
+
+            fig2.update_traces(legendgrouptitle_text="")
             st.plotly_chart(fig2, use_container_width=True)
 
         r2a, r2b = st.columns(2)
@@ -709,6 +751,8 @@ with tab1:
                               gridcolor=GRID_COLOR, secondary_y=True,
                               title_font=AXIS_FONT)
             fig3.update_annotations(font=dict(size=12, color="#111111"))
+
+            fig3.update_traces(legendgrouptitle_text="")
             st.plotly_chart(fig3, use_container_width=True)
 
         with r2b:
@@ -741,6 +785,8 @@ with tab1:
             fig4 = style_axes(fig4, xtitle="USD per kg")
             fig4.update_yaxes(tickfont=dict(size=11, color="#1A1A1A"))
             fig4.update_annotations(font=dict(size=12, color="#111111"))
+
+            fig4.update_traces(legendgrouptitle_text="")
             st.plotly_chart(fig4, use_container_width=True)
 
         st.markdown('<div class="sec-head">G4-OP4 — ASFIS Species Diversity Over Time</div>',
@@ -765,6 +811,8 @@ with tab1:
         fig5.update_layout(**base_layout(220, dict(l=4,r=4,t=12,b=4)), legend=LEGEND_TOP)
         fig5 = style_axes(fig5, ytitle="# Species")
         fig5.update_annotations(font=dict(size=12, color="#111111"))
+
+        fig5.update_traces(legendgrouptitle_text="")
         st.plotly_chart(fig5, use_container_width=True)
 
         # ── KPI-8 — Top-N Concentration Ratio (CR5 / CR10) ───────────────────
@@ -813,6 +861,8 @@ with tab1:
             fig_cr = style_axes(fig_cr, ytitle="Share of global production (%)")
             fig_cr.update_yaxes(range=[0,105])
             fig_cr.update_annotations(font=dict(size=12, color="#111111"))
+
+            fig_cr.update_traces(legendgrouptitle_text="")
             st.plotly_chart(fig_cr, use_container_width=True)
 
         with st.expander("📋 Production & Value Data Tables"):
@@ -893,6 +943,8 @@ with tab2:
         )
         fig_tree.update_layout(**base_layout(360, dict(l=4,r=4,t=10,b=4)))
         fig_tree.update_annotations(font=dict(size=12, color="#111111"))
+
+        fig_tree.update_traces(legendgrouptitle_text="")
         st.plotly_chart(fig_tree, use_container_width=True)
 
         st.markdown("<br>", unsafe_allow_html=True)
@@ -927,6 +979,8 @@ with tab2:
                 )],
             )
             fig6.update_annotations(font=dict(size=12, color="#111111"))
+
+            fig6.update_traces(legendgrouptitle_text="")
             st.plotly_chart(fig6, use_container_width=True)
 
         with gb:
@@ -948,6 +1002,8 @@ with tab2:
             fig7 = style_axes(fig7, xtitle="Million tonnes (cumulative)")
             fig7.update_yaxes(tickfont=dict(size=11, color="#1A1A1A"))
             fig7.update_annotations(font=dict(size=12, color="#111111"))
+
+            fig7.update_traces(legendgrouptitle_text="")
             st.plotly_chart(fig7, use_container_width=True)
 
         gi, gj = st.columns(2)
@@ -972,6 +1028,8 @@ with tab2:
             fig8.update_yaxes(tickfont=AXIS_FONT, gridcolor=GRID_COLOR,
                               title_font=AXIS_FONT, title_text="M tonnes")
             fig8.update_annotations(font=dict(size=12, color="#111111"))
+
+            fig8.update_traces(legendgrouptitle_text="")
             st.plotly_chart(fig8, use_container_width=True)
 
         with gj:
@@ -991,6 +1049,8 @@ with tab2:
             fig9.update_yaxes(tickfont=AXIS_FONT, gridcolor=GRID_COLOR,
                               title_font=AXIS_FONT, title_text="M tonnes")
             fig9.update_annotations(font=dict(size=12, color="#111111"))
+
+            fig9.update_traces(legendgrouptitle_text="")
             st.plotly_chart(fig9, use_container_width=True)
 
         # ── KPI-18 & KPI-19 — new row ─────────────────────────────────────────
@@ -1016,6 +1076,8 @@ with tab2:
                                title_font=AXIS_FONT, title_text="Share (%)",
                                ticksuffix="%", range=[0,100])
             fig18.update_annotations(font=dict(size=12, color="#111111"))
+
+            fig18.update_traces(legendgrouptitle_text="")
             st.plotly_chart(fig18, use_container_width=True)
 
         with gl:
@@ -1048,6 +1110,8 @@ with tab2:
             fig19.update_layout(**base_layout(280, dict(l=4,r=4,t=10,b=4)), legend=LEGEND_BOTTOM)
             fig19 = style_axes(fig19, ytitle="USD / tonne")
             fig19.update_annotations(font=dict(size=12, color="#111111"))
+
+            fig19.update_traces(legendgrouptitle_text="")
             st.plotly_chart(fig19, use_container_width=True)
 
         with st.expander("📋 Geographic & Species Data Tables"):
@@ -1167,6 +1231,8 @@ with tab3:
         fpm.update_yaxes(title_text="Permitted Farms", tickfont=AXIS_FONT,
                          gridcolor=GRID_COLOR, title_font=AXIS_FONT, secondary_y=True)
         fpm.update_annotations(font=dict(size=12, color="#111111"))
+
+        fpm.update_traces(legendgrouptitle_text="")
         st.plotly_chart(fpm, use_container_width=True)
 
     with pm2:
@@ -1187,6 +1253,8 @@ with tab3:
                           gridcolor=GRID_COLOR, title_font=AXIS_FONT,
                           secondary_y=True, range=[85, 100])
         fpm2.update_annotations(font=dict(size=12, color="#111111"))
+
+        fpm2.update_traces(legendgrouptitle_text="")
         st.plotly_chart(fpm2, use_container_width=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
@@ -1211,6 +1279,8 @@ with tab3:
     farm_fig.update_yaxes(title_text="Farm Area (ha)", tickfont=AXIS_FONT,
                           gridcolor=GRID_COLOR, title_font=AXIS_FONT, secondary_y=True)
     farm_fig.update_annotations(font=dict(size=12, color="#111111"))
+
+    farm_fig.update_traces(legendgrouptitle_text="")
     st.plotly_chart(farm_fig, use_container_width=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
@@ -1258,6 +1328,8 @@ with tab3:
         fso.update_layout(**base_layout(275), legend=LEGEND_TOP)
         fso = style_axes(fso)
         fso.update_annotations(font=dict(size=12, color="#111111"))
+
+        fso.update_traces(legendgrouptitle_text="")
         st.plotly_chart(fso, use_container_width=True)
 
     with ss2:
@@ -1273,6 +1345,8 @@ with tab3:
         ftr.update_layout(**base_layout(275, dict(l=4,r=4,t=10,b=30)), showlegend=False)
         ftr = style_axes(ftr, ytitle="Individuals trained")
         ftr.update_annotations(font=dict(size=12, color="#111111"))
+
+        ftr.update_traces(legendgrouptitle_text="")
         st.plotly_chart(ftr, use_container_width=True)
 
     with st.expander("📋 Permitting & Social Data Tables"):
@@ -1363,6 +1437,8 @@ with tab4:
             yaxis=dict(tickfont=dict(size=11, color="#1A1A1A")),
         )
         fig14.update_annotations(font=dict(size=12, color="#111111"))
+
+        fig14.update_traces(legendgrouptitle_text="")
         st.plotly_chart(fig14, use_container_width=True)
 
         st.markdown("<br>", unsafe_allow_html=True)
@@ -1401,6 +1477,8 @@ with tab4:
             fig20.update_yaxes(tickfont=AXIS_FONT, gridcolor=GRID_COLOR,
                                title_font=AXIS_FONT, title_text="M tonnes")
             fig20.update_annotations(font=dict(size=12, color="#111111"))
+
+            fig20.update_traces(legendgrouptitle_text="")
             st.plotly_chart(fig20, use_container_width=True)
 
         with t4r1b:
@@ -1441,6 +1519,8 @@ with tab4:
             fig24 = style_axes(fig24, xtitle="Price std dev (USD/kg)")
             fig24.update_yaxes(tickfont=dict(size=11, color="#1A1A1A"))
             fig24.update_annotations(font=dict(size=12, color="#111111"))
+
+            fig24.update_traces(legendgrouptitle_text="")
             st.plotly_chart(fig24, use_container_width=True)
 
         st.markdown("<br>", unsafe_allow_html=True)
@@ -1485,6 +1565,8 @@ with tab4:
                 xtitle="Aquaculture Share of Total Seaweed Production (%)",
                 ytitle="Farmed Volume (tonnes, log scale)")
             fig21.update_annotations(font=dict(size=12, color="#111111"))
+
+            fig21.update_traces(legendgrouptitle_text="")
             st.plotly_chart(fig21, use_container_width=True)
 
         with t4r2b:
@@ -1522,6 +1604,8 @@ with tab4:
             fig25.update_yaxes(tickfont=dict(size=11, color="#1A1A1A"))
             fig25.update_xaxes(range=[0,120])
             fig25.update_annotations(font=dict(size=12, color="#111111"))
+
+            fig25.update_traces(legendgrouptitle_text="")
             st.plotly_chart(fig25, use_container_width=True)
 
         st.markdown("<br>", unsafe_allow_html=True)
@@ -1568,6 +1652,8 @@ with tab4:
                 xtitle=f"CAGR % (last {cagr_win} years)",
                 ytitle=f"Production {LY} (M tonnes, log)")
             fig22.update_annotations(font=dict(size=12, color="#111111"))
+
+            fig22.update_traces(legendgrouptitle_text="")
             st.plotly_chart(fig22, use_container_width=True)
 
             # KPI-23: Emerging producers table
@@ -1626,6 +1712,8 @@ with tab4:
             fig26.update_yaxes(tickfont=dict(size=11, color="#1A1A1A"))
             fig26.update_xaxes(range=[0,120])
             fig26.update_annotations(font=dict(size=12, color="#111111"))
+
+            fig26.update_traces(legendgrouptitle_text="")
             st.plotly_chart(fig26, use_container_width=True)
 
         with st.expander("📋 Advanced Analytics Data Tables"):
