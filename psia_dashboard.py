@@ -1,5 +1,5 @@
 """
-PSIA Seaweed Industry Analytics Dashboard  — v17.0
+PSIA Seaweed Industry Analytics Dashboard  — v18.0
 ====================================================
   CHANGES FROM v9:
   - Tab 4 "🔬 Advanced Analytics" added with 6 remaining KPIs:
@@ -94,23 +94,23 @@ SP_PAL = [
     "#2E7D6B", "#7B4F00", "#1A3A6B", "#6B1A3A", "#3A6B1A",
 ]
 
-CHART_FONT   = dict(family="Inter, Arial, sans-serif", size=13, color="#111111")
-AXIS_FONT    = dict(family="Inter, Arial, sans-serif", size=12, color="#222222")
-TITLE_FONT   = dict(family="Georgia, serif",            size=13, color="#111111")
+CHART_FONT   = dict(family="Inter, Arial, sans-serif", size=13, color="#1A1A1A")
+AXIS_FONT    = dict(family="Inter, Arial, sans-serif", size=12, color="#333333")
+TITLE_FONT   = dict(family="Georgia, serif", size=13, color="#1A1A1A")
 GRID_COLOR   = "#E8E8E8"
 AXIS_LINE    = dict(color="#CCCCCC", width=1)
 
 LEGEND_TOP = dict(
     orientation="h", y=1.14, x=0,
-    font=dict(size=12, color="#111111"),
+    font=dict(size=12, color="#1A1A1A"),
     bgcolor="rgba(255,255,255,0.95)",
     bordercolor="#CCCCCC", borderwidth=1,
-    tracegroupgap=0,        # prevents Plotly 5.x "undefined" legend group titles
-    groupclick="toggleitem", # cleaner legend click behaviour
+    tracegroupgap=0,
+    groupclick="toggleitem",
 )
 LEGEND_BOTTOM = dict(
     orientation="h", y=-0.44, x=0,
-    font=dict(size=11, color="#111111"),
+    font=dict(size=11, color="#1A1A1A"),
     bgcolor="rgba(255,255,255,0.95)",
     bordercolor="#CCCCCC", borderwidth=1,
     title_text="",
@@ -127,12 +127,11 @@ def base_layout(height=320, margin=None):
         paper_bgcolor="white",
         plot_bgcolor="#FAFAFA",
         font=CHART_FONT,
-        # title.text must be "" (not absent) — absent title makes Plotly JS render "undefined"
+        # title.text="" is required — absent text causes Plotly JS to render "undefined"
         title=dict(text="", font=TITLE_FONT),
     )
 
 def style_axes(fig, xtitle="", ytitle="", y2title="", y_range=None):
-    """Apply consistent dark readable axis styling to every chart."""
     xax = dict(
         title=dict(text=xtitle, font=AXIS_FONT, standoff=8),
         tickfont=AXIS_FONT, gridcolor=GRID_COLOR,
@@ -154,10 +153,6 @@ def style_axes(fig, xtitle="", ytitle="", y2title="", y_range=None):
             title=dict(text=y2title, font=AXIS_FONT, standoff=8),
             tickfont=AXIS_FONT, secondary_y=True,
         )
-    # Ensure ALL annotations (subplot titles, vlines, etc.) are dark
-    fig.update_annotations(font=dict(size=12, color="#111111"))
-
-    fig.update_traces(legendgrouptitle_text="")
     return fig
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -165,70 +160,38 @@ def style_axes(fig, xtitle="", ytitle="", y2title="", y_range=None):
 # ─────────────────────────────────────────────────────────────────────────────
 st.markdown(f"""
 <style>
-/* ════════════════════════════════════════════════════════════════════════
-   PSIA DASHBOARD — Force light theme for all main content
-   Overrides Streamlit dark mode so text is always readable.
-   Chat panel keeps its own dark background via specific class rules.
-   ════════════════════════════════════════════════════════════════════════ */
-
-/* ── Force white background across ALL main Streamlit containers ──────── */
-[data-testid="stApp"], .stApp {{
-    background-color: #FFFFFF !important;
-}}
-[data-testid="stAppViewContainer"],
-[data-testid="stMain"],
-section.main,
-.main .block-container,
-[data-testid="stMainBlockContainer"] {{
-    background-color: #FFFFFF !important;
-    color: #1A1A1A !important;
-}}
-
-/* ── Markdown containers: transparent bg, dark text ─────────────────── */
-[data-testid="stMarkdownContainer"] {{
-    background-color: transparent !important;
-    color: #1A1A1A !important;
-}}
-[data-testid="stMarkdownContainer"] p,
-[data-testid="stMarkdownContainer"] li,
-[data-testid="stMarkdownContainer"] span,
-[data-testid="stMarkdownContainer"] div {{
-    color: #1A1A1A !important;
-    background-color: transparent !important;
-}}
-
-/* ── Base typography ────────────────────────────────────────────────── */
+/* ── Base — intentionally NO !important so chat white rules always win ────── */
 html, body, [class*="css"] {{
     font-family: Inter, Arial, sans-serif;
     font-size: 14px;
     color: #1A1A1A;
-    background-color: #FFFFFF;
     -webkit-font-smoothing: antialiased;
 }}
 .stMarkdown p, .stMarkdown li {{
-    font-size: 14px !important;
-    color: #1A1A1A !important;
+    font-size: 14px;
+    color: #1A1A1A;
     line-height: 1.65;
 }}
-.stMarkdown div {{ color: #1A1A1A !important; background: transparent !important; }}
-[data-testid="stCaptionContainer"] p {{ font-size: 13px !important; color: #444444 !important; }}
-.stMarkdown h4 {{ font-size: 17px !important; font-weight: 700 !important; color: #1A1A1A !important; }}
-.stMarkdown h3 {{ font-size: 19px !important; font-weight: 700 !important; color: #1A1A1A !important; }}
-.stMarkdown h2 {{ font-size: 21px !important; font-weight: 700 !important; color: #1A1A1A !important; }}
-[data-testid="stExpander"] summary span {{ font-size: 14px !important; font-weight: 600 !important; color: #1A1A1A !important; }}
-[data-testid="stDataFrame"] *  {{ font-size: 13px !important; color: #1A1A1A !important; background-color: transparent !important; }}
-[data-testid="stAlert"] p      {{ font-size: 14px !important; color: #1A1A1A !important; }}
+[data-testid="stCaptionContainer"] p {{ font-size: 13px; color: #444444; }}
+.stMarkdown h4                       {{ font-size: 17px; font-weight: 700; color: #1A1A1A; }}
+[data-testid="stExpander"] summary span {{ font-size: 14px; font-weight: 600; color: #1A1A1A; }}
+[data-testid="stDataFrame"] *        {{ font-size: 13px; color: #1A1A1A; }}
+[data-testid="stAlert"] p            {{ font-size: 14px; color: #1A1A1A; }}
 .stRadio label, .stSelectbox label, .stSlider label,
 .stMultiSelect label, .stCheckbox label {{
-    font-size: 14px !important; color: #1A1A1A !important; font-weight: 500 !important;
+    font-size: 14px; color: #1A1A1A; font-weight: 500;
 }}
 [data-baseweb="select"] span,
 [data-baseweb="radio"] label,
-[data-baseweb="option"] {{ font-size: 14px !important; color: #1A1A1A !important; }}
+[data-baseweb="option"] {{ font-size: 14px; color: #1A1A1A; }}
 
-/* ── CHAT PANEL — white text on dark background ──────────────────────── */
+/* ── CHAT PANEL — ALL text white on dark background ─────────────────────────
+   Belt-and-suspenders: class selectors + inline styles on every node.
+   !important here because nothing else in our CSS uses !important for text,
+   so these will always win.
+─────────────────────────────────────────────────────────────────────────── */
 .chat-hist-wrap                        {{ color: #FFFFFF !important; }}
-.chat-hist-wrap *                      {{ color: #FFFFFF !important; background-color: transparent !important; }}
+.chat-hist-wrap *                      {{ color: #FFFFFF !important; }}
 .chat-hist-wrap p                      {{ color: #FFFFFF !important; font-size: 14px !important; line-height: 1.6 !important; }}
 .chat-hist-wrap span                   {{ color: #FFFFFF !important; }}
 .chat-hist-wrap div                    {{ color: #FFFFFF !important; }}
@@ -241,7 +204,7 @@ html, body, [class*="css"] {{
 .chat-welcome p                        {{ color: #FFFFFF !important; font-size: 14px !important; }}
 .chat-icon-label                       {{ color: rgba(255,255,255,0.85) !important; }}
 
-/* ── Sidebar ─────────────────────────────────────────────────────────── */
+/* ── Sidebar ─────────────────────────────────────────────────────────────── */
 [data-testid="stSidebar"] {{ background: {C['t900']}; padding-top: 0; }}
 [data-testid="stSidebar"] * {{ color: #FFFFFF !important; }}
 [data-testid="stSidebar"] label {{ font-size: 14px !important; font-weight: 600 !important; color: #FFFFFF !important; }}
@@ -257,35 +220,65 @@ html, body, [class*="css"] {{
 }}
 [data-testid="collapsedControl"] svg {{ fill: #FFFFFF !important; }}
 
-/* ── Tabs ────────────────────────────────────────────────────────────── */
+/* ── Tabs ────────────────────────────────────────────────────────────────── */
+[data-baseweb="tab"] button p,
+[data-baseweb="tab"] button {{ font-size: 14px !important; font-weight: 600 !important; color: #333333 !important; }}
+[aria-selected="true"] button p,
+[aria-selected="true"] button {{ color: {C['t600']} !important; font-weight: 700 !important; }}
+[data-baseweb="tab-list"] {{ margin-bottom: 4px; }}
+
+/* ── KPI cards ───────────────────────────────────────────────────────────── */
+.kpi-card {{
+    background: #FFFFFF; border-radius: 10px; padding: 16px 18px;
+    border: 1px solid #D0D0D0; border-top: 4px solid {C['t400']};
+    margin-bottom: 6px; box-shadow: 0 2px 6px rgba(0,0,0,0.07);
+}}
+.kpi-card.amber {{ border-top-color: {C['amber']}; }}
+.kpi-card.coral {{ border-top-color: {C['coral']}; }}
+.kpi-card.blue  {{ border-top-color: {C['blue']};  }}
+.kpi-label  {{ font-size: 11px; font-weight: 700; color: #555555; text-transform: uppercase; letter-spacing: 0.9px; margin-bottom: 6px; font-family: Inter, Arial, sans-serif; }}
+.kpi-value  {{ font-size: 26px; font-weight: 700; color: #1A1A1A; line-height: 1.15; font-family: Georgia, serif; }}
+.kpi-delta  {{ font-size: 12px; font-weight: 600; color: #1B6B2F; margin-top: 5px; font-family: Inter, Arial, sans-serif; }}
+.kpi-delta.neg {{ color: #B84020; }}
+.kpi-src    {{ font-size: 11px; font-weight: 400; color: #666666; margin-top: 6px; font-family: Inter, Arial, sans-serif; }}
+
+/* ── Section headings ────────────────────────────────────────────────────── */
+.sec-head {{
+    font-family: Georgia, serif; font-size: 15px; font-weight: 700;
+    color: #1A1A1A; padding-bottom: 6px; border-bottom: 2px solid #DDDDDD; margin-bottom: 12px;
+}}
+
+/* ── Tags ────────────────────────────────────────────────────────────────── */
+.tag {{ display: inline-block; background: #E8F5F0; color: #1A1A1A; border-radius: 5px; padding: 3px 9px; font-size: 12px; font-weight: 600; font-family: Inter, Arial, sans-serif; margin-right: 5px; margin-bottom: 5px; }}
+.tag.sim {{ background: #FFF0D6; color: #5C3900; }}
+.tag.ext {{ background: #E8F0FE; color: #1A3A6B; }}
+
+/* ── Dark mode override — force white bg so text stays readable ──────────── */
+[data-testid="stApp"], .stApp {{ background-color: #FFFFFF !important; }}
+[data-testid="stAppViewContainer"],
+[data-testid="stMain"],
+section.main,
+.main .block-container,
+[data-testid="stMainBlockContainer"] {{
+    background-color: #FFFFFF !important;
+    color: #1A1A1A !important;
+}}
+[data-testid="stMarkdownContainer"] {{
+    background-color: transparent !important;
+    color: #1A1A1A !important;
+}}
+[data-testid="stMarkdownContainer"] p,
+[data-testid="stMarkdownContainer"] li,
+[data-testid="stMarkdownContainer"] span,
+[data-testid="stMarkdownContainer"] div {{
+    color: #1A1A1A !important;
+    background-color: transparent !important;
+}}
 [data-baseweb="tab-panel"],
 [data-baseweb="tab-list"] {{ background-color: #FFFFFF !important; }}
 [data-baseweb="tab-list"] {{ margin-bottom: 4px; }}
-[data-baseweb="tab"] button p,
-[data-baseweb="tab"] button {{
-    font-size: 14px !important; font-weight: 600 !important;
-    color: #333333 !important; background: transparent !important;
-}}
-[aria-selected="true"] button p,
-[aria-selected="true"] button {{ color: {C['t600']} !important; font-weight: 700 !important; }}
 
-/* ── KPI cards ───────────────────────────────────────────────────────── */
-.kpi-card {{
-    background: #FFFFFF !important; border-radius: 10px; padding: 16px 18px;
-    border: 1px solid #D0D0D0 !important; border-top: 4px solid {C['t400']} !important;
-    margin-bottom: 6px; box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-}}
-.kpi-card.amber {{ border-top-color: {C['amber']} !important; }}
-.kpi-card.coral {{ border-top-color: {C['coral']} !important; }}
-.kpi-card.blue  {{ border-top-color: {C['blue']}  !important; }}
-.kpi-label {{ font-size: 11px !important; font-weight: 700 !important; color: #555555 !important; text-transform: uppercase; letter-spacing: 0.9px; margin-bottom: 6px; font-family: Inter, Arial, sans-serif; }}
-.kpi-value {{ font-size: 26px !important; font-weight: 700 !important; color: #1A1A1A !important; line-height: 1.15; font-family: Georgia, serif; }}
-.kpi-delta {{ font-size: 12px !important; font-weight: 600 !important; color: #1B6B2F !important; margin-top: 5px; font-family: Inter, Arial, sans-serif; }}
-.kpi-delta.neg {{ color: #B84020 !important; }}
-.kpi-src   {{ font-size: 11px !important; font-weight: 400 !important; color: #555555 !important; margin-top: 6px; font-family: Inter, Arial, sans-serif; }}
-
-/* ── Section headings ("G4-OP1 — Global Production Trend" etc.) ──────── */
-/* Explicit white bg + dark text: dark mode cannot override either       */
+/* ── Section headings: explicit white bg so dark mode can't hide them ─────── */
 .sec-head, .stMarkdown .sec-head {{
     display: block !important;
     background-color: #FFFFFF !important;
@@ -294,14 +287,16 @@ html, body, [class*="css"] {{
     font-weight: 700 !important;
     color: #1A1A1A !important;
     padding: 6px 0 !important;
-    border-bottom: 2px solid #CCCCCC !important;
+    border-bottom: 2px solid #DDDDDD !important;
     margin-bottom: 12px !important;
 }}
-
-/* ── Tags ────────────────────────────────────────────────────────────── */
-.tag {{ display: inline-block !important; background: #E8F5F0 !important; color: #1A1A1A !important; border-radius: 5px; padding: 3px 9px; font-size: 12px !important; font-weight: 600 !important; font-family: Inter, Arial, sans-serif; margin-right: 5px; margin-bottom: 5px; }}
-.tag.sim {{ background: #FFF0D6 !important; color: #5C3900 !important; }}
-.tag.ext {{ background: #E8F0FE !important; color: #1A3A6B !important; }}
+/* KPI card values and labels force readable dark */
+.kpi-value  {{ font-size: 26px !important; font-weight: 700 !important; color: #1A1A1A !important; line-height: 1.15; font-family: Georgia, serif; }}
+.kpi-label  {{ font-size: 11px !important; font-weight: 700 !important; color: #555555 !important; text-transform: uppercase; letter-spacing: 0.9px; margin-bottom: 6px; font-family: Inter, Arial, sans-serif; }}
+.stMarkdown h4 {{ font-size: 17px !important; font-weight: 700 !important; color: #1A1A1A !important; }}
+[data-testid="stExpander"] summary span {{ font-size: 14px !important; font-weight: 600 !important; color: #1A1A1A !important; }}
+[data-baseweb="tab"] button p,
+[data-baseweb="tab"] button {{ font-size: 14px !important; font-weight: 600 !important; color: #333333 !important; }}
 </style>
 """, unsafe_allow_html=True)
 
@@ -349,26 +344,20 @@ sim_perm, sim_social = build_simulated()
 # SIDEBAR
 # ─────────────────────────────────────────────────────────────────────────────
 with st.sidebar:
-    # ── Logo & branding ───────────────────────────────────────────────────────
-    st.markdown("""
-    <div style="text-align:center;padding:28px 12px 20px;
-                border-bottom:1px solid rgba(255,255,255,0.18);margin-bottom:18px;">
-      <div style="font-size:44px;margin-bottom:12px;line-height:1;">🌿</div>
-      <div style="font-family:Georgia,serif;font-size:21px;font-weight:700;
-                  color:#FFFFFF;letter-spacing:0.3px;line-height:1.2;">
-        PSIA Dashboard
-      </div>
-      <div style="font-size:11px;color:#C8EDE3;margin-top:8px;
-                  letter-spacing:0.5px;line-height:1.5;font-weight:400;">
-        Pacific Seaweed<br>Industry Association
-      </div>
+    st.markdown(f"""
+    <div style="text-align:center;padding:20px 0 14px;">
+      <div style="font-size:36px;margin-bottom:8px;">🌿</div>
+      <div style="font-family:Georgia,serif;font-size:20px;font-weight:700;
+                  letter-spacing:0.3px;">PSIA Dashboard</div>
+      <div style="font-size:11px;color:#FFFFFF;margin-top:4px;
+                  letter-spacing:0.4px;opacity:0.9;">Pacific Seaweed Industry Association</div>
     </div>""", unsafe_allow_html=True)
 
-    # ── Filters label ──────────────────────────────────────────────────────────
+    st.markdown("---")
     st.markdown(
-        "<div style='font-size:10px;font-weight:700;letter-spacing:1.4px;"
-        "text-transform:uppercase;color:#A8D8CC;margin-bottom:14px;"
-        "padding-bottom:4px;'>📊 Dashboard Filters</div>",
+        f"<div style='font-size:11px;font-weight:700;letter-spacing:0.8px;"
+        f"text-transform:uppercase;color:#FFFFFF;margin-bottom:10px;'>"
+        "Dashboard Filters</div>",
         unsafe_allow_html=True)
 
     y_min = int(gp["period"].min()) if data_ok else 1950
@@ -382,17 +371,12 @@ with st.sidebar:
     top_n    = st.selectbox("Top-N Species / Countries", [5, 10, 15], index=1)
     cagr_win = st.selectbox("CAGR Window (years)", [5, 10, 20], index=1)
 
-    # ── Data sources legend ───────────────────────────────────────────────────
+    st.markdown("---")
     st.markdown(
-        "<div style='margin-top:22px;padding:14px 12px;background:rgba(255,255,255,0.07);"
-        "border-radius:8px;border:1px solid rgba(255,255,255,0.12);'>"
-        "<div style='font-size:10px;font-weight:700;letter-spacing:1.2px;"
-        "text-transform:uppercase;color:#A8D8CC;margin-bottom:10px;'>Data Sources</div>"
-        "<div style='font-size:13px;color:#FFFFFF;line-height:2.2;'>"
-        "🟢 FAO FishStat — real<br>"
+        f"<div style='font-size:12px;color:#FFFFFF;line-height:2.0;'>"
+        "🟢 FAO FishStat — real data<br>"
         "📊 DFO / CIRNAC — estimated<br>"
-        "📅 Data through 2024"
-        "</div></div>",
+        "📅 Data through 2024</div>",
         unsafe_allow_html=True)
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -697,7 +681,6 @@ with tab1:
             fig.update_yaxes(tickfont=AXIS_FONT, gridcolor=GRID_COLOR,
                              linecolor=AXIS_LINE["color"])
             fig.update_annotations(font=dict(size=12, color="#111111"))
-
             fig.update_traces(legendgrouptitle_text="")
             st.plotly_chart(fig, use_container_width=True)
 
@@ -726,7 +709,6 @@ with tab1:
             fig2.update_layout(**base_layout(370), legend=LEGEND_TOP)
             fig2 = style_axes(fig2, ytitle="M tonnes")
             fig2.update_annotations(font=dict(size=12, color="#111111"))
-
             fig2.update_traces(legendgrouptitle_text="")
             st.plotly_chart(fig2, use_container_width=True)
 
@@ -762,7 +744,6 @@ with tab1:
                               gridcolor=GRID_COLOR, secondary_y=True,
                               title_font=AXIS_FONT)
             fig3.update_annotations(font=dict(size=12, color="#111111"))
-
             fig3.update_traces(legendgrouptitle_text="")
             st.plotly_chart(fig3, use_container_width=True)
 
@@ -796,7 +777,6 @@ with tab1:
             fig4 = style_axes(fig4, xtitle="USD per kg")
             fig4.update_yaxes(tickfont=dict(size=11, color="#1A1A1A"))
             fig4.update_annotations(font=dict(size=12, color="#111111"))
-
             fig4.update_traces(legendgrouptitle_text="")
             st.plotly_chart(fig4, use_container_width=True)
 
@@ -822,7 +802,6 @@ with tab1:
         fig5.update_layout(**base_layout(220, dict(l=4,r=4,t=12,b=4)), legend=LEGEND_TOP)
         fig5 = style_axes(fig5, ytitle="# Species")
         fig5.update_annotations(font=dict(size=12, color="#111111"))
-
         fig5.update_traces(legendgrouptitle_text="")
         st.plotly_chart(fig5, use_container_width=True)
 
@@ -872,7 +851,6 @@ with tab1:
             fig_cr = style_axes(fig_cr, ytitle="Share of global production (%)")
             fig_cr.update_yaxes(range=[0,105])
             fig_cr.update_annotations(font=dict(size=12, color="#111111"))
-
             fig_cr.update_traces(legendgrouptitle_text="")
             st.plotly_chart(fig_cr, use_container_width=True)
 
@@ -954,7 +932,6 @@ with tab2:
         )
         fig_tree.update_layout(**base_layout(360, dict(l=4,r=4,t=10,b=4)))
         fig_tree.update_annotations(font=dict(size=12, color="#111111"))
-
         fig_tree.update_traces(legendgrouptitle_text="")
         st.plotly_chart(fig_tree, use_container_width=True)
 
@@ -990,7 +967,6 @@ with tab2:
                 )],
             )
             fig6.update_annotations(font=dict(size=12, color="#111111"))
-
             fig6.update_traces(legendgrouptitle_text="")
             st.plotly_chart(fig6, use_container_width=True)
 
@@ -1013,7 +989,6 @@ with tab2:
             fig7 = style_axes(fig7, xtitle="Million tonnes (cumulative)")
             fig7.update_yaxes(tickfont=dict(size=11, color="#1A1A1A"))
             fig7.update_annotations(font=dict(size=12, color="#111111"))
-
             fig7.update_traces(legendgrouptitle_text="")
             st.plotly_chart(fig7, use_container_width=True)
 
@@ -1039,7 +1014,6 @@ with tab2:
             fig8.update_yaxes(tickfont=AXIS_FONT, gridcolor=GRID_COLOR,
                               title_font=AXIS_FONT, title_text="M tonnes")
             fig8.update_annotations(font=dict(size=12, color="#111111"))
-
             fig8.update_traces(legendgrouptitle_text="")
             st.plotly_chart(fig8, use_container_width=True)
 
@@ -1060,7 +1034,6 @@ with tab2:
             fig9.update_yaxes(tickfont=AXIS_FONT, gridcolor=GRID_COLOR,
                               title_font=AXIS_FONT, title_text="M tonnes")
             fig9.update_annotations(font=dict(size=12, color="#111111"))
-
             fig9.update_traces(legendgrouptitle_text="")
             st.plotly_chart(fig9, use_container_width=True)
 
@@ -1087,7 +1060,6 @@ with tab2:
                                title_font=AXIS_FONT, title_text="Share (%)",
                                ticksuffix="%", range=[0,100])
             fig18.update_annotations(font=dict(size=12, color="#111111"))
-
             fig18.update_traces(legendgrouptitle_text="")
             st.plotly_chart(fig18, use_container_width=True)
 
@@ -1121,7 +1093,6 @@ with tab2:
             fig19.update_layout(**base_layout(280, dict(l=4,r=4,t=10,b=4)), legend=LEGEND_BOTTOM)
             fig19 = style_axes(fig19, ytitle="USD / tonne")
             fig19.update_annotations(font=dict(size=12, color="#111111"))
-
             fig19.update_traces(legendgrouptitle_text="")
             st.plotly_chart(fig19, use_container_width=True)
 
@@ -1242,7 +1213,6 @@ with tab3:
         fpm.update_yaxes(title_text="Permitted Farms", tickfont=AXIS_FONT,
                          gridcolor=GRID_COLOR, title_font=AXIS_FONT, secondary_y=True)
         fpm.update_annotations(font=dict(size=12, color="#111111"))
-
         fpm.update_traces(legendgrouptitle_text="")
         st.plotly_chart(fpm, use_container_width=True)
 
@@ -1264,7 +1234,6 @@ with tab3:
                           gridcolor=GRID_COLOR, title_font=AXIS_FONT,
                           secondary_y=True, range=[85, 100])
         fpm2.update_annotations(font=dict(size=12, color="#111111"))
-
         fpm2.update_traces(legendgrouptitle_text="")
         st.plotly_chart(fpm2, use_container_width=True)
 
@@ -1290,7 +1259,6 @@ with tab3:
     farm_fig.update_yaxes(title_text="Farm Area (ha)", tickfont=AXIS_FONT,
                           gridcolor=GRID_COLOR, title_font=AXIS_FONT, secondary_y=True)
     farm_fig.update_annotations(font=dict(size=12, color="#111111"))
-
     farm_fig.update_traces(legendgrouptitle_text="")
     st.plotly_chart(farm_fig, use_container_width=True)
 
@@ -1339,7 +1307,6 @@ with tab3:
         fso.update_layout(**base_layout(275), legend=LEGEND_TOP)
         fso = style_axes(fso)
         fso.update_annotations(font=dict(size=12, color="#111111"))
-
         fso.update_traces(legendgrouptitle_text="")
         st.plotly_chart(fso, use_container_width=True)
 
@@ -1356,7 +1323,6 @@ with tab3:
         ftr.update_layout(**base_layout(275, dict(l=4,r=4,t=10,b=30)), showlegend=False)
         ftr = style_axes(ftr, ytitle="Individuals trained")
         ftr.update_annotations(font=dict(size=12, color="#111111"))
-
         ftr.update_traces(legendgrouptitle_text="")
         st.plotly_chart(ftr, use_container_width=True)
 
@@ -1448,7 +1414,6 @@ with tab4:
             yaxis=dict(tickfont=dict(size=11, color="#1A1A1A")),
         )
         fig14.update_annotations(font=dict(size=12, color="#111111"))
-
         fig14.update_traces(legendgrouptitle_text="")
         st.plotly_chart(fig14, use_container_width=True)
 
@@ -1488,7 +1453,6 @@ with tab4:
             fig20.update_yaxes(tickfont=AXIS_FONT, gridcolor=GRID_COLOR,
                                title_font=AXIS_FONT, title_text="M tonnes")
             fig20.update_annotations(font=dict(size=12, color="#111111"))
-
             fig20.update_traces(legendgrouptitle_text="")
             st.plotly_chart(fig20, use_container_width=True)
 
@@ -1530,7 +1494,6 @@ with tab4:
             fig24 = style_axes(fig24, xtitle="Price std dev (USD/kg)")
             fig24.update_yaxes(tickfont=dict(size=11, color="#1A1A1A"))
             fig24.update_annotations(font=dict(size=12, color="#111111"))
-
             fig24.update_traces(legendgrouptitle_text="")
             st.plotly_chart(fig24, use_container_width=True)
 
@@ -1576,7 +1539,6 @@ with tab4:
                 xtitle="Aquaculture Share of Total Seaweed Production (%)",
                 ytitle="Farmed Volume (tonnes, log scale)")
             fig21.update_annotations(font=dict(size=12, color="#111111"))
-
             fig21.update_traces(legendgrouptitle_text="")
             st.plotly_chart(fig21, use_container_width=True)
 
@@ -1615,7 +1577,6 @@ with tab4:
             fig25.update_yaxes(tickfont=dict(size=11, color="#1A1A1A"))
             fig25.update_xaxes(range=[0,120])
             fig25.update_annotations(font=dict(size=12, color="#111111"))
-
             fig25.update_traces(legendgrouptitle_text="")
             st.plotly_chart(fig25, use_container_width=True)
 
@@ -1663,7 +1624,6 @@ with tab4:
                 xtitle=f"CAGR % (last {cagr_win} years)",
                 ytitle=f"Production {LY} (M tonnes, log)")
             fig22.update_annotations(font=dict(size=12, color="#111111"))
-
             fig22.update_traces(legendgrouptitle_text="")
             st.plotly_chart(fig22, use_container_width=True)
 
@@ -1723,7 +1683,6 @@ with tab4:
             fig26.update_yaxes(tickfont=dict(size=11, color="#1A1A1A"))
             fig26.update_xaxes(range=[0,120])
             fig26.update_annotations(font=dict(size=12, color="#111111"))
-
             fig26.update_traces(legendgrouptitle_text="")
             st.plotly_chart(fig26, use_container_width=True)
 
@@ -2173,21 +2132,20 @@ RAG_DOCS = [
         "id": "fao_top_aquaculture_2017",
         "title": "Top Species Groups in Global Aquaculture 2017 (FAO) — ALL species, not seaweed only",
         "text": (
-            "⚠️ IMPORTANT: The 112 million tonnes figure in this chunk refers to ALL aquaculture "
-            "species combined (fish, shellfish, seaweed, freshwater — everything). "
+            "⚠️ IMPORTANT: The 112 million tonnes figure refers to ALL aquaculture species "
+            "combined (fish, shellfish, seaweed, freshwater — everything). "
             "Do NOT use it when asked about seaweed production. "
             "Seaweed-specific global production in 2017 was approximately 33.7 million tonnes "
             "(from FAO FishStat seaweed-only data shown on the dashboard). "
             "FAO factsheet on top 10 species groups in TOTAL global aquaculture (all species, 2017): "
             "Total ALL-SPECIES aquaculture production was 112 million tonnes valued at USD 250 billion. "
-            "Seaweeds as a subset: Brown seaweeds were #3 by quantity (12.30% of all aquaculture "
-            "= ~13.8M tonnes), led by Japanese kelp (Saccharina japonica). "
-            "Red seaweeds were #2 by quantity (15.42% = ~17.3M tonnes), led by Eucheuma and Gracilaria. "
-            "Combined seaweed share of total aquaculture ≈ 27.7% = ~31M tonnes. "
+            "Seaweeds as a subset: Brown seaweeds #3 by quantity (12.30% = ~13.8M t), "
+            "led by Japanese kelp. Red seaweeds #2 (15.42% = ~17.3M t), led by Eucheuma/Gracilaria. "
+            "Combined seaweed share ~27.7% = ~31M tonnes of the 112M all-species total. "
             "In 2017, 608 aquaculture species items had been farmed globally since 1950; "
             "424 were actively farmed in 2017 (vs 254 in 1990). "
-            "Carps and cyprinids were #1 by all-aquaculture quantity (25%); "
-            "Atlantic salmon was #2 by value. China dominates most categories."
+            "Carps and cyprinids were #1 by all-aquaculture quantity (25%). "
+            "China dominates most aquaculture categories."
         ),
         "source": "Cai, Zhou, Yan, Lucente & Lagana, FAO / Chinese Academy of Fishery Sciences, 2017",
     },
@@ -2218,8 +2176,7 @@ RAG_DOCS = [
             "trout, etc.) — NOT seaweed only. "
             "The 2024 Aquaculture Industry Data Snapshot (aquaculture.ca/RIAS Inc.) shows: "
             "Canadian ALL-SPECIES aquaculture grew 9.8% in 2024 to 160,318 tonnes total. "
-            "Total economic output for all aquaculture: $6 billion "
-            "(production $3.28B + processing $2.75B). GDP: $2.27 billion. "
+            "Total economic output for all aquaculture: $6 billion. GDP: $2.27 billion. "
             "Jobs across all aquaculture: 18,074 full-time. "
             "Farmed salmon dominated at 69.3% of all-aquaculture production; "
             "salmon production was 109,048 tonnes in 2024. "
@@ -2334,9 +2291,9 @@ def retrieve_context(query: str, top_k: int = 4) -> str:
 # ─────────────────────────────────────────────────────────────────────────────
 def build_system_prompt(query: str = "", is_uc2: bool = False) -> str:
     """
-    Build the system prompt for the PSIA AI assistant.
-    Order: (1) Instructions + disambiguation, (2) Live data [UC2], (3) RAG background.
-    Live data comes BEFORE RAG so the LLM anchors on real dashboard numbers first.
+    Build system prompt. Order: (1) instructions + disambiguation,
+    (2) live data [UC2 first], (3) RAG background.
+    Live data comes BEFORE RAG so the LLM anchors on real dashboard numbers.
     """
     base = (
         "You are the PSIA (Pacific Seaweed Industry Association) AI assistant "
@@ -2357,16 +2314,12 @@ def build_system_prompt(query: str = "", is_uc2: bool = False) -> str:
 
     # ── UC2: inject ALL live dashboard data FIRST, before RAG ─────────────────
     if is_uc2 and data_ok:
-        # ── Tab 1: Production & Value ──────────────────────────────────────────
-        # Historical production by year
-        hist_yrs = sorted([
-            y for y in fgp["period"].unique()
-            if fgp[fgp["period"]==y]["value"].sum() > 0
-        ])
+        # Historical production (all years)
+        hist_yrs = sorted([y for y in fgp["period"].unique()
+                           if fgp[fgp["period"]==y]["value"].sum() > 0])
         hist_lines = "\n".join([
             f"  {y}: {fgp[fgp['period']==y]['value'].sum()/1e6:.2f}M t"
-            for y in hist_yrs
-        ])
+            for y in hist_yrs])
 
         # Species prices (top 10)
         av_sp = fav.groupby(["period","seaweed_name"])["value"].sum().reset_index()
@@ -2379,58 +2332,48 @@ def build_system_prompt(query: str = "", is_uc2: bool = False) -> str:
         sp_price_agg = (jp_sp[jp_sp["usd_kg"]<20]
                         .groupby("species")
                         .agg(avg_price=("usd_kg","mean"), tot_vol=("tonnes","sum"))
-                        .reset_index()
-                        .nlargest(10,"tot_vol")
-                        .sort_values("tot_vol",ascending=False))
+                        .reset_index().nlargest(10,"tot_vol").sort_values("tot_vol",ascending=False))
         price_lines = "\n".join([
             f"  {row['species']}: ${row['avg_price']:.3f}/kg avg"
-            for _, row in sp_price_agg.iterrows()
-        ])
+            for _, row in sp_price_agg.iterrows()])
 
-        # CR5 / CR10
-        cr_data = (fgp[fgp["value"]>0]
-                   .groupby(["period","country_name"])["value"].sum().reset_index())
-        ly_cr = cr_data[cr_data["period"]==LY]
-        tot_cr = ly_cr["value"].sum()
+        # CR5/CR10
+        cr_data = fgp[fgp["value"]>0].groupby(["period","country_name"])["value"].sum().reset_index()
+        ly_cr    = cr_data[cr_data["period"]==LY]
+        tot_cr   = ly_cr["value"].sum()
         sorted_cr = ly_cr["value"].sort_values(ascending=False).values
         cr5  = sorted_cr[:5].sum()/tot_cr*100  if len(sorted_cr)>=5  else 0
         cr10 = sorted_cr[:10].sum()/tot_cr*100 if len(sorted_cr)>=10 else 0
 
-        # ── Tab 2: Geographic & Species ───────────────────────────────────────
-        # Continental breakdown
-        cont_s = (fgp[fgp["period"]==LY]
-                  .groupby("continent_group_en")["value"].sum()
-                  .sort_values(ascending=False))
-        cont_lines = "\n".join([
-            f"  {k}: {v/cont_s.sum()*100:.1f}% ({v/1e6:.2f}M t)"
-            for k, v in cont_s.items() if k != "Unknown"
-        ])
-
-        # Top 15 countries by latest year production
+        # Top 15 countries
         top15_c = (fgp[fgp["period"]==LY]
                    .groupby("country_name")["value"].sum()
                    .sort_values(ascending=False).head(15))
         country_lines = "\n".join([
             f"  {i+1}. {c}: {v/1e6:.3f}M t ({v/fgp[fgp['period']==LY]['value'].sum()*100:.1f}%)"
-            for i,(c,v) in enumerate(top15_c.items())
-        ])
+            for i,(c,v) in enumerate(top15_c.items())])
+
+        # Continental
+        cont_s = (fgp[fgp["period"]==LY]
+                  .groupby("continent_group_en")["value"].sum().sort_values(ascending=False))
+        cont_lines = "\n".join([
+            f"  {k}: {v/cont_s.sum()*100:.1f}% ({v/1e6:.2f}M t)"
+            for k, v in cont_s.items() if k != "Unknown"])
 
         # Top 10 species
         sp10 = (faq.groupby("seaweed_name")["value"].sum()
                 .sort_values(ascending=False).head(10))
-        sp_lines = "\n".join([
-            f"  {i+1}. {s}: {v/1e6:.2f}M t cumulative"
-            for i,(s,v) in enumerate(sp10.items())
-        ])
+        sp_lines = "\n".join([f"  {i+1}. {s}: {v/1e6:.2f}M t cumulative"
+                               for i,(s,v) in enumerate(sp10.items())])
 
-        # Income group breakdown + value per tonne
+        # Income group
         ig_s = (fgp[fgp["period"]==LY]
-                .groupby("ecoclass_group_en")["value"].sum()
-                .sort_values(ascending=False))
+                .groupby("ecoclass_group_en")["value"].sum().sort_values(ascending=False))
         ig_lines = "\n".join([
             f"  {k}: {v/ig_s.sum()*100:.1f}% ({v/1e6:.2f}M t)"
-            for k, v in ig_s.items()
-        ])
+            for k, v in ig_s.items()])
+
+        # Value per tonne by income group
         av_ig = (fav[fav["value"]>0]
                  .groupby(["period","ecoclass_group_en"])["value"].sum()
                  .reset_index().rename(columns={"value":"usd_k"}))
@@ -2442,15 +2385,13 @@ def build_system_prompt(query: str = "", is_uc2: bool = False) -> str:
         vpt_df["usd_per_t"] = vpt_df["usd_k"]*1000/vpt_df["tonnes_ig"]
         vpt_lines = "\n".join([
             f"  {row['ecoclass_group_en']}: ${row['usd_per_t']:,.0f}/t"
-            for _, row in vpt_df.sort_values("usd_per_t",ascending=False).iterrows()
-        ])
+            for _, row in vpt_df.sort_values("usd_per_t",ascending=False).iterrows()])
 
-        # ── Tab 3: Permitting & Social (estimated) ────────────────────────────
+        # Tab 3 permitting & social (estimated)
         perm_ly = sim_perm[sim_perm["year"]==sim_perm["year"].max()].iloc[0]
         soc_ly  = sim_social[sim_social["year"]==sim_social["year"].max()].iloc[0]
 
-        # ── Tab 4: Advanced Analytics ─────────────────────────────────────────
-        # Top growing countries (CAGR)
+        # Tab 4: top CAGR countries
         cagr_base_yr = max(LY - cagr_win, year_range[0])
         c_base = (fgp[fgp["period"]==cagr_base_yr]
                   .groupby("country_name")["value"].sum().reset_index()
@@ -2464,64 +2405,31 @@ def build_system_prompt(query: str = "", is_uc2: bool = False) -> str:
         top_grow = cagr_df.nlargest(10,"cagr")[["country_name","cagr","last_v"]]
         cagr_lines = "\n".join([
             f"  {row['country_name']}: {row['cagr']:.1f}% CAGR ({row['last_v']/1e3:.0f}k t)"
-            for _, row in top_grow.iterrows()
-        ])
-
-        # Adoption rates (top 10)
-        aq_adopt = faq.groupby(["period","country_name"])["value"].sum().reset_index()
-        cq_adopt = fcq.groupby(["period","country_name"])["value"].sum().reset_index()
-        aq_adopt.columns = ["year","country","aq"]
-        cq_adopt.columns = ["year","country","cap"]
-        adopt = aq_adopt.merge(cq_adopt, on=["year","country"], how="outer").fillna(0)
-        adopt_ly = adopt[adopt["year"]==LY].copy()
-        adopt_ly["total"] = adopt_ly["aq"] + adopt_ly["cap"]
-        adopt_ly = adopt_ly[adopt_ly["total"]>0]
-        adopt_ly["rate"] = adopt_ly["aq"]/adopt_ly["total"]*100
-        top_adopt = adopt_ly.nlargest(10,"aq")[["country","rate","aq"]]
-        adopt_lines = "\n".join([
-            f"  {row['country']}: {row['rate']:.1f}% farmed ({row['aq']/1e6:.3f}M t)"
-            for _, row in top_adopt.iterrows()
-        ])
-
-        # Price volatility top 5
-        jp_sp["yr_kg"] = jp_sp["usd_kg"]
-        vola = (jp_sp[jp_sp["usd_kg"]<20]
-                .groupby("species")["yr_kg"]
-                .agg(["std","count"]).reset_index()
-                .rename(columns={"std":"vol_std","count":"n"}))
-        vola = vola[vola["n"]>=5].dropna().nlargest(5,"vol_std")
-        vola_lines = "\n".join([
-            f"  {row['species']}: σ={row['vol_std']:.3f} $/kg"
-            for _, row in vola.iterrows()
-        ])
+            for _, row in top_grow.iterrows()])
 
         base += f"""
 
-╔══════════════════════════════════════════════════════════════╗
-║  LIVE DASHBOARD DATA — SEAWEED ONLY ({year_range[0]}–{year_range[1]})              ║
-║  Source: FAO FishStat CSVs + DFO/CIRNAC estimates           ║
-║  Use these numbers to answer ALL data questions.             ║
-╚══════════════════════════════════════════════════════════════╝
+╔══════════════════════════════════════════════════════════════════╗
+║  LIVE DASHBOARD DATA — SEAWEED ONLY ({year_range[0]}–{year_range[1]})                ║
+║  Source: FAO FishStat CSVs + DFO/CIRNAC estimates               ║
+║  Use these numbers to answer ALL data questions.                 ║
+╚══════════════════════════════════════════════════════════════════╝
 
-── TAB 1: PRODUCTION & VALUE ──────────────────────────────────
-Latest year ({LY}) overview:
-  Total seaweed production : {prod_tot/1e6:.2f}M tonnes
-  YoY growth               : {yoy_prod:+.1f}%
-  {cagr_win}-year CAGR         : {cagr_prod:.1f}%
-  Farmed (aquaculture)     : {aq_tot/1e6:.2f}M t ({aq_tot/prod_tot*100:.1f}%)
-  Wild capture             : {wc_tot/1e6:.3f}M t ({wc_tot/prod_tot*100:.1f}%)
-  ASFIS species tracked    : {sp_total} total (farmed:{sp_cult}, wild:{sp_wild})
-  Avg seaweed price        : ${avg_price_kg:.2f}/kg
-  Total seaweed value      : USD ${val_tot/1e6:.1f}B (YoY {yoy_val:+.1f}%)
-  Market concentration     : CR5={cr5:.1f}%, CR10={cr10:.1f}%
+── TAB 1: PRODUCTION & VALUE ──────────────────────────────────────
+Seaweed production ({LY}): {prod_tot/1e6:.2f}M t · YoY {yoy_prod:+.1f}% · CAGR {cagr_prod:.1f}%
+  Farmed: {aq_tot/1e6:.2f}M t ({aq_tot/prod_tot*100:.1f}%) · Wild: {wc_tot/1e6:.3f}M t ({wc_tot/prod_tot*100:.1f}%)
+  ASFIS seaweed species: {sp_total} total (farmed:{sp_cult}, wild:{sp_wild})
+  Avg seaweed price: ${avg_price_kg:.2f}/kg
+  Total seaweed value: USD ${val_tot/1e6:.1f}B (YoY {yoy_val:+.1f}%)
+  Market concentration: CR5={cr5:.1f}%, CR10={cr10:.1f}%
 
-Production by year (seaweed-only, ALL years):
+Historical seaweed-only production (ALL years, FAO FishStat):
 {hist_lines}
 
-Top 10 species average price (implied USD/kg):
+Top 10 species avg price (implied USD/kg):
 {price_lines}
 
-── TAB 2: GEOGRAPHIC & SPECIES ────────────────────────────────
+── TAB 2: GEOGRAPHIC & SPECIES ────────────────────────────────────
 Continental share ({LY}):
 {cont_lines}
 
@@ -2538,35 +2446,28 @@ Value per tonne by income group ({LY}):
 {vpt_lines}
 
 ── TAB 3: PERMITTING & SOCIAL (Canada — estimated from public reports) ──
-  ADA designated areas     : {int(perm_ly['ada_ha']):,} ha
-  Licensed farms (total)   : {int(perm_ly['permitted_farms'])}
-  Seaweed-specific farms   : {int(perm_ly['seaweed_farms'])}
-  Seaweed farm area        : {int(perm_ly['seaweed_area_ha']):,} ha
-  AOAs assessed            : {int(perm_ly['aoa_count'])}
-  Fisheries Act compliance : {perm_ly['compliance_pct']:.1f}%
-  Social license score     : {int(soc_ly['agreements'])+60}/100
-  Indigenous agreements    : {int(soc_ly['agreements'])} MOUs/benefit agreements
-  Indigenous employed      : {int(soc_ly['employed'])} people
-  Indigenous trained       : {int(soc_ly['trained_indig'])} individuals
-  Total trained            : {int(soc_ly['trained_total'])} individuals
+  ADA designated areas    : {int(perm_ly['ada_ha']):,} ha
+  Licensed farms (total)  : {int(perm_ly['permitted_farms'])}
+  Seaweed-specific farms  : {int(perm_ly['seaweed_farms'])}
+  Seaweed farm area       : {int(perm_ly['seaweed_area_ha']):,} ha
+  AOAs assessed           : {int(perm_ly['aoa_count'])}
+  Fisheries Act compliance: {perm_ly['compliance_pct']:.1f}%
+  Social license score    : {int(soc_ly['agreements'])+60}/100
+  Indigenous agreements   : {int(soc_ly['agreements'])} MOUs/benefit agreements
+  Indigenous employed     : {int(soc_ly['employed'])} people
+  Indigenous trained      : {int(soc_ly['trained_indig'])} individuals
+  Total trained           : {int(soc_ly['trained_total'])} individuals
 
-── TAB 4: ADVANCED ANALYTICS ──────────────────────────────────
+── TAB 4: ADVANCED ANALYTICS ──────────────────────────────────────
 Top 10 fastest-growing countries ({cagr_win}-yr CAGR):
 {cagr_lines}
-
-Top 10 countries by adoption rate (farmed ÷ total, {LY}):
-{adopt_lines}
-
-Top 5 most price-volatile seaweed species:
-{vola_lines}
 """
 
-    # ── RAG background knowledge (comes AFTER live data) ──────────────────────
-    # In UC2 use fewer RAG chunks (live data is primary); in UC1 use more
+    # RAG background (comes AFTER live data; fewer chunks in UC2)
     top_k_rag = 2 if is_uc2 else 4
     rag_ctx = retrieve_context(query, top_k=top_k_rag)
     if rag_ctx:
-        base += f"\n\n== BACKGROUND KNOWLEDGE (supplementary context) ==\n{rag_ctx}"
+        base += f"\n\n== BACKGROUND KNOWLEDGE (supplementary) ==\n{rag_ctx}"
 
     return base
 
@@ -2580,39 +2481,33 @@ if "chat_mode" not in st.session_state: st.session_state.chat_mode = "UC1"
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# CHAT PANEL  — fixed right column, clean redesign
+# CHAT PANEL  — fixed right column
 # ─────────────────────────────────────────────────────────────────────────────
 with _chat_col:
     is_uc2    = st.session_state.chat_mode == "UC2"
-    rag_badge = f"🔍 {len(RAG_DOCS)} docs" if _rag_ok else "💬 No RAG"
+    rag_badge = f"🔍 RAG ({len(RAG_DOCS)} docs)" if _rag_ok else "💬"
 
-    # ── Header ────────────────────────────────────────────────────────────────
+    # Header
     st.markdown(f"""
-    <div style="background:linear-gradient(135deg,{C['t800']} 0%,{C['t600']} 100%);
-                color:#FFFFFF;padding:16px 18px 14px;border-radius:12px 12px 0 0;
-                box-shadow:0 3px 12px rgba(0,0,0,0.20);">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
-        <div>
-          <div style="font-size:15px;font-weight:700;font-family:Georgia,serif;
-                      letter-spacing:0.2px;margin-bottom:4px;">
-            🌿 PSIA AI Assistant
-          </div>
-          <div style="font-size:11px;color:#C8EDE3;font-family:Inter,Arial,sans-serif;
-                      font-weight:400;">{rag_badge} · Powered by Groq</div>
-        </div>
-        <div style="font-size:10px;color:#A8D8CC;font-family:Inter,Arial,sans-serif;
-                    text-align:right;padding-top:2px;">
-          {"📊 Live Data" if is_uc2 else "💬 Industry"}
-        </div>
+    <div style="background:{C['t600']};color:#FFFFFF;
+                padding:14px 18px 12px;border-radius:12px 12px 0 0;
+                box-shadow:0 2px 8px rgba(0,0,0,0.15);">
+      <div style="font-size:15px;font-weight:700;font-family:Georgia,serif;
+                  letter-spacing:0.2px;margin-bottom:3px;">
+        🌿 PSIA AI Assistant
+      </div>
+      <div style="font-size:12px;color:#CCEEDD;font-family:Inter,Arial,sans-serif;
+                  margin-top:3px;font-weight:400;">
+        {rag_badge} · Powered by Groq
       </div>
     </div>""", unsafe_allow_html=True)
 
-    # ── Mode toggle ───────────────────────────────────────────────────────────
+    # Mode toggle strip — white background so radio labels are clearly readable
     st.markdown(
-        '<div style="background:#F0F4F2;padding:8px 14px 6px;'
-        'border-left:1px solid #CCCCCC;border-right:1px solid #CCCCCC;'
-        'border-bottom:1px solid #E0E0E0;">'
+        '<div style="background:#FFFFFF;padding:8px 14px 4px;'
+        'border-left:1px solid #CCCCCC;border-right:1px solid #CCCCCC;">'
         '</div>', unsafe_allow_html=True)
+
     _mc1, _mc2 = st.columns([3, 1])
     with _mc1:
         mode_choice = st.radio(
@@ -2631,58 +2526,61 @@ with _chat_col:
             st.session_state.messages = []
             st.rerun()
 
-    # ── Message history ───────────────────────────────────────────────────────
-    # Every text node has explicit color:#FFFFFF inline — Streamlit CSS cannot override
-    _W = "color:#FFFFFF;font-family:Inter,Arial,sans-serif;"
+    # Message history ─ every text node gets explicit color:#FFFFFF inline
+    # so Streamlit's own CSS cascade can never override it
+    _WHITE = "color:#FFFFFF;font-family:Inter,Arial,sans-serif;"
     hist_html = (
-        f'<div class="chat-hist-wrap" style="'
-        f'background:{C["t900"]};min-height:300px;max-height:400px;'
-        f'overflow-y:auto;padding:16px 14px 12px;{_W}'
+        f'<div class="chat-hist-wrap" '
+        f'style="background:{C["t900"]};min-height:320px;max-height:420px;'
+        f'overflow-y:auto;padding:14px 14px 10px;{_WHITE}'
         f'border-left:1px solid {C["t800"]};border-right:1px solid {C["t800"]};">'
     )
     if not st.session_state.messages:
         hist_html += (
             '<div class="chat-welcome" '
-            'style="background:rgba(255,255,255,0.10);border-radius:10px 10px 10px 2px;'
-            f'padding:14px 16px;margin-bottom:12px;{_W}font-size:13px;line-height:1.72;'
-            'border:1px solid rgba(255,255,255,0.12);">'
-            '<span style="color:#FFFFFF;font-size:13px;line-height:1.72;display:block;">'
-            "<strong style='color:#C8EDE3;'>Hi! I'm the PSIA AI Assistant.</strong><br>"
-            "Ask me about the seaweed industry, BC regulations, social license, "
-            "production costs, First Nations aquaculture, or live dashboard data."
+            f'style="background:#1A6B50;border-radius:10px 10px 10px 2px;'
+            f'padding:14px 16px;margin-bottom:12px;{_WHITE}font-size:14px;line-height:1.70;">'
+            '<span style="color:#FFFFFF;font-size:14px;line-height:1.70;display:block;">'
+            "Hi! I'm the PSIA AI Assistant. Ask me about the seaweed industry, "
+            "BC regulations, social license, production costs, First Nations "
+            "aquaculture, or live dashboard data."
             '</span>'
             '</div>'
         )
     for m in st.session_state.messages:
-        u      = m["role"] == "user"
-        bg     = f"{C['t400']}" if u else "rgba(255,255,255,0.10)"
-        br     = "14px 14px 3px 14px" if u else "14px 14px 14px 3px"
-        mg     = "margin-left:20px" if u else "margin-right:20px"
-        lbl    = "You" if u else "🌿 PSIA"
-        align  = "text-align:right;" if u else ""
-        cls    = "chat-bubble-user" if u else "chat-bubble-bot"
-        lbl_col = "rgba(255,255,255,0.70)"
-        content = str(m["content"]).replace("<","&lt;").replace(">","&gt;")
+        u   = m["role"] == "user"
+        bg  = "#1D6E50" if u else "#17523C"
+        br  = "14px 14px 2px 14px" if u else "14px 14px 14px 2px"
+        mg  = "margin-left:24px" if u else "margin-right:24px"
+        ico = "You" if u else "🌿 PSIA"
+        align = "text-align:right;" if u else ""
+        cls = "chat-bubble-user" if u else "chat-bubble-bot"
+        # Escape any characters that would break HTML attributes
+        content = str(m["content"]).replace("<", "&lt;").replace(">", "&gt;")
         hist_html += (
-            f'<div class="chat-icon-label" style="{_W}font-size:10px;font-weight:600;'
-            f'color:{lbl_col};margin-bottom:3px;{align}">'
-            f'<span style="color:{lbl_col};">{lbl}</span></div>'
-            f'<div class="{cls}" style="background:{bg};border-radius:{br};{_W}'
-            f'padding:10px 14px;margin-bottom:10px;{mg};border:1px solid rgba(255,255,255,0.12);'
-            f'font-size:13px;line-height:1.62;word-wrap:break-word;">'
-            f'<span style="color:#FFFFFF;font-size:13px;line-height:1.62;">{content}</span>'
+            # Icon label
+            f'<div class="chat-icon-label" '
+            f'style="{_WHITE}font-size:10px;font-weight:600;opacity:0.82;'
+            f'margin-bottom:3px;{align}">'
+            f'<span style="color:#FFFFFF;">{ico}</span></div>'
+            # Bubble
+            f'<div class="{cls}" '
+            f'style="background:{bg};border-radius:{br};{_WHITE}'
+            f'padding:11px 14px;margin-bottom:10px;{mg};'
+            f'font-size:14px;line-height:1.62;word-wrap:break-word;">'
+            f'<span style="color:#FFFFFF;font-size:14px;line-height:1.62;">{content}</span>'
             f'</div>'
         )
     if st.session_state.thinking:
         hist_html += (
-            f'<div style="{_W}font-size:13px;font-style:italic;'
-            'color:rgba(255,255,255,0.75);padding:6px 2px 10px;">'
-            '<span style="color:rgba(255,255,255,0.75);">⏳ Thinking…</span></div>'
+            f'<div style="{_WHITE}font-size:13px;font-style:italic;opacity:0.80;padding:4px 2px 8px;">'
+            '<span style="color:#FFFFFF;">⏳ Thinking…</span>'
+            '</div>'
         )
     hist_html += "</div>"
     st.markdown(hist_html, unsafe_allow_html=True)
 
-    # ── Suggestion chips ──────────────────────────────────────────────────────
+    # Suggestion chips
     SUGG = {
         False: [
             "What are BC's seaweed aquaculture regulations?",
@@ -2690,19 +2588,21 @@ with _chat_col:
             "What is the FNFC Aquaculture Action Plan?",
         ],
         True: [
-            f"What is total seaweed production in {LY if data_ok else 2024}?",
+            f"What is total production in {LY if data_ok else 2024}?",
             "Which continent produces the most seaweed?",
-            "What is the compliance rate in Canada?",
+            "What is the average price per kg?",
         ],
     }
+
     st.markdown(
-        '<div style="background:#EEF4F1;padding:8px 14px 4px;'
+        '<div style="background:#F7F7F7;padding:8px 14px 4px;'
         'border-left:1px solid #CCCCCC;border-right:1px solid #CCCCCC;">'
-        '<span style="font-size:11px;font-weight:700;color:#444444;'
-        'font-family:Inter,Arial,sans-serif;letter-spacing:0.3px;">Try asking:</span>'
+        '<span style="font-size:12px;font-weight:600;color:#333333;'
+        'font-family:Inter,Arial,sans-serif;">Try asking:</span>'
         '</div>', unsafe_allow_html=True)
+
     st.markdown(
-        '<div style="background:#EEF4F1;padding:4px 10px 8px;'
+        '<div style="background:#F7F7F7;padding:0 10px 8px;'
         'border-left:1px solid #CCCCCC;border-right:1px solid #CCCCCC;">',
         unsafe_allow_html=True)
     for sugg in SUGG[is_uc2]:
@@ -2711,12 +2611,14 @@ with _chat_col:
             st.rerun()
     st.markdown("</div>", unsafe_allow_html=True)
 
-    # ── Input row ─────────────────────────────────────────────────────────────
+    # Input row
     st.markdown(
-        '<div style="background:#FFFFFF;padding:10px 12px 8px;'
-        'border-radius:0 0 12px 12px;border:1px solid #CCCCCC;border-top:none;'
-        'box-shadow:0 4px 14px rgba(0,0,0,0.10);">'
+        '<div style="background:#FFFFFF;padding:10px 12px;'
+        'border-radius:0 0 12px 12px;'
+        'border:1px solid #CCCCCC;border-top:none;'
+        'box-shadow:0 4px 12px rgba(0,0,0,0.10);">'
         '</div>', unsafe_allow_html=True)
+
     _ic, _bc = st.columns([5, 1])
     with _ic:
         txt_input = st.text_input(
@@ -2726,29 +2628,34 @@ with _chat_col:
             label_visibility="collapsed",
         )
     with _bc:
-        send_clicked = st.button("Send", key="chat_send",
-                                 use_container_width=True, type="primary")
+        send_clicked = st.button(
+            "Send", key="chat_send",
+            use_container_width=True,
+            type="primary",
+        )
 
     if _rag_ok:
         st.markdown(
-            f'<div style="font-size:10px;color:#666666;font-weight:500;'
-            'font-family:Inter,Arial,sans-serif;text-align:center;margin-top:3px;">'
-            f'🔍 {len(RAG_DOCS)} knowledge docs · top-{"2 (Live)" if is_uc2 else "4 (Info)"} retrieval'
+            '<div style="font-size:11px;color:#444444;font-weight:500;'
+            'font-family:Inter,Arial,sans-serif;text-align:center;margin-top:4px;">'
+            f'🔍 {len(RAG_DOCS)} knowledge docs · top-4 retrieval'
             '</div>', unsafe_allow_html=True)
     else:
         st.markdown(
-            '<div style="font-size:10px;color:#CC0000;font-weight:600;'
-            'font-family:Inter,Arial,sans-serif;text-align:center;margin-top:3px;">'
+            '<div style="font-size:11px;color:#CC0000;font-weight:600;'
+            'font-family:Inter,Arial,sans-serif;text-align:center;margin-top:4px;">'
             '⚠️ pip install scikit-learn to enable RAG'
             '</div>', unsafe_allow_html=True)
 
     pending = st.session_state.pop("_pending", None)
     prompt  = pending or (txt_input.strip() if send_clicked and txt_input.strip() else None)
+
     if prompt and not st.session_state.thinking:
         st.session_state.messages.append({"role": "user", "content": prompt})
         st.session_state["_last_prompt"] = prompt
         st.session_state.thinking = True
         st.rerun()
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # GROQ API CALL
