@@ -1,5 +1,5 @@
 """
-PSIA Seaweed Industry Analytics Dashboard  — v10.0
+PSIA Seaweed Industry Analytics Dashboard  — v15.0
 ====================================================
   CHANGES FROM v9:
   - Tab 4 "🔬 Advanced Analytics" added with 6 remaining KPIs:
@@ -94,21 +94,21 @@ SP_PAL = [
     "#2E7D6B", "#7B4F00", "#1A3A6B", "#6B1A3A", "#3A6B1A",
 ]
 
-CHART_FONT   = dict(family="Inter, Arial, sans-serif", size=13, color="#1A1A1A")
-AXIS_FONT    = dict(family="Inter, Arial, sans-serif", size=12, color="#333333")
-TITLE_FONT   = dict(family="Georgia, serif", size=13, color="#1A1A1A")
+CHART_FONT   = dict(family="Inter, Arial, sans-serif", size=13, color="#111111")
+AXIS_FONT    = dict(family="Inter, Arial, sans-serif", size=12, color="#222222")
+TITLE_FONT   = dict(family="Georgia, serif",            size=13, color="#111111")
 GRID_COLOR   = "#E8E8E8"
 AXIS_LINE    = dict(color="#CCCCCC", width=1)
 
 LEGEND_TOP = dict(
     orientation="h", y=1.14, x=0,
-    font=dict(size=12, color="#1A1A1A"),
+    font=dict(size=12, color="#111111"),
     bgcolor="rgba(255,255,255,0.95)",
     bordercolor="#CCCCCC", borderwidth=1,
 )
 LEGEND_BOTTOM = dict(
     orientation="h", y=-0.44, x=0,
-    font=dict(size=11, color="#1A1A1A"),
+    font=dict(size=11, color="#111111"),
     bgcolor="rgba(255,255,255,0.95)",
     bordercolor="#CCCCCC", borderwidth=1,
     title_text="",
@@ -123,9 +123,12 @@ def base_layout(height=320, margin=None):
         paper_bgcolor="white",
         plot_bgcolor="#FAFAFA",
         font=CHART_FONT,
+        # Explicitly set title font so subplot_titles and chart titles are dark
+        title_font=TITLE_FONT,
     )
 
 def style_axes(fig, xtitle="", ytitle="", y2title="", y_range=None):
+    """Apply consistent dark readable axis styling to every chart."""
     xax = dict(
         title=dict(text=xtitle, font=AXIS_FONT, standoff=8),
         tickfont=AXIS_FONT, gridcolor=GRID_COLOR,
@@ -147,6 +150,8 @@ def style_axes(fig, xtitle="", ytitle="", y2title="", y_range=None):
             title=dict(text=y2title, font=AXIS_FONT, standoff=8),
             tickfont=AXIS_FONT, secondary_y=True,
         )
+    # Ensure ALL annotations (subplot titles, vlines, etc.) are dark
+    fig.update_annotations(font=dict(size=12, color="#111111"))
     return fig
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -161,16 +166,22 @@ html, body, [class*="css"] {{
     color: #1A1A1A;
     -webkit-font-smoothing: antialiased;
 }}
+/* General paragraph + list text */
 .stMarkdown p, .stMarkdown li {{
     font-size: 14px;
     color: #1A1A1A;
     line-height: 1.65;
 }}
-[data-testid="stCaptionContainer"] p {{ font-size: 13px; color: #444444; }}
-.stMarkdown h4                       {{ font-size: 17px; font-weight: 700; color: #1A1A1A; }}
-[data-testid="stExpander"] summary span {{ font-size: 14px; font-weight: 600; color: #1A1A1A; }}
-[data-testid="stDataFrame"] *        {{ font-size: 13px; color: #1A1A1A; }}
-[data-testid="stAlert"] p            {{ font-size: 14px; color: #1A1A1A; }}
+/* Cover all div text in main content — prevents Streamlit overriding plain divs */
+.stMarkdown div {{ color: #1A1A1A; }}
+[data-testid="stCaptionContainer"] p {{ font-size: 13px; color: #444444 !important; }}
+/* #### headings — !important needed; Streamlit's internal h4 rule wins otherwise */
+.stMarkdown h4 {{ font-size: 17px !important; font-weight: 700 !important; color: #1A1A1A !important; }}
+.stMarkdown h3 {{ font-size: 19px !important; font-weight: 700 !important; color: #1A1A1A !important; }}
+.stMarkdown h2 {{ font-size: 21px !important; font-weight: 700 !important; color: #1A1A1A !important; }}
+[data-testid="stExpander"] summary span {{ font-size: 14px !important; font-weight: 600 !important; color: #1A1A1A !important; }}
+[data-testid="stDataFrame"] *  {{ font-size: 13px !important; color: #1A1A1A !important; }}
+[data-testid="stAlert"] p      {{ font-size: 14px !important; color: #1A1A1A !important; }}
 .stRadio label, .stSelectbox label, .stSlider label,
 .stMultiSelect label, .stCheckbox label {{
     font-size: 14px; color: #1A1A1A; font-weight: 500;
@@ -230,22 +241,29 @@ html, body, [class*="css"] {{
 .kpi-card.amber {{ border-top-color: {C['amber']}; }}
 .kpi-card.coral {{ border-top-color: {C['coral']}; }}
 .kpi-card.blue  {{ border-top-color: {C['blue']};  }}
-.kpi-label  {{ font-size: 11px; font-weight: 700; color: #555555; text-transform: uppercase; letter-spacing: 0.9px; margin-bottom: 6px; font-family: Inter, Arial, sans-serif; }}
-.kpi-value  {{ font-size: 26px; font-weight: 700; color: #1A1A1A; line-height: 1.15; font-family: Georgia, serif; }}
-.kpi-delta  {{ font-size: 12px; font-weight: 600; color: #1B6B2F; margin-top: 5px; font-family: Inter, Arial, sans-serif; }}
-.kpi-delta.neg {{ color: #B84020; }}
-.kpi-src    {{ font-size: 11px; font-weight: 400; color: #666666; margin-top: 6px; font-family: Inter, Arial, sans-serif; }}
+.kpi-label  {{ font-size: 11px !important; font-weight: 700 !important; color: #555555 !important; text-transform: uppercase; letter-spacing: 0.9px; margin-bottom: 6px; font-family: Inter, Arial, sans-serif; }}
+.kpi-value  {{ font-size: 26px !important; font-weight: 700 !important; color: #1A1A1A !important; line-height: 1.15; font-family: Georgia, serif; }}
+.kpi-delta  {{ font-size: 12px !important; font-weight: 600 !important; color: #1B6B2F !important; margin-top: 5px; font-family: Inter, Arial, sans-serif; }}
+.kpi-delta.neg {{ color: #B84020 !important; }}
+.kpi-src    {{ font-size: 11px !important; font-weight: 400 !important; color: #555555 !important; margin-top: 6px; font-family: Inter, Arial, sans-serif; }}
 
 /* ── Section headings ────────────────────────────────────────────────────── */
-.sec-head {{
-    font-family: Georgia, serif; font-size: 15px; font-weight: 700;
-    color: #1A1A1A; padding-bottom: 6px; border-bottom: 2px solid #DDDDDD; margin-bottom: 12px;
+/* !important required — Streamlit's internal .stMarkdown div rules otherwise win */
+.sec-head, .stMarkdown .sec-head {{
+    font-family: Georgia, serif !important;
+    font-size: 15px !important;
+    font-weight: 700 !important;
+    color: #1A1A1A !important;
+    padding-bottom: 6px;
+    border-bottom: 2px solid #DDDDDD;
+    margin-bottom: 12px;
+    display: block;
 }}
 
 /* ── Tags ────────────────────────────────────────────────────────────────── */
-.tag {{ display: inline-block; background: #E8F5F0; color: #1A1A1A; border-radius: 5px; padding: 3px 9px; font-size: 12px; font-weight: 600; font-family: Inter, Arial, sans-serif; margin-right: 5px; margin-bottom: 5px; }}
-.tag.sim {{ background: #FFF0D6; color: #5C3900; }}
-.tag.ext {{ background: #E8F0FE; color: #1A3A6B; }}
+.tag {{ display: inline-block; background: #E8F5F0; color: #1A1A1A !important; border-radius: 5px; padding: 3px 9px; font-size: 12px !important; font-weight: 600 !important; font-family: Inter, Arial, sans-serif; margin-right: 5px; margin-bottom: 5px; }}
+.tag.sim {{ background: #FFF0D6; color: #5C3900 !important; }}
+.tag.ext {{ background: #E8F0FE; color: #1A3A6B !important; }}
 </style>
 """, unsafe_allow_html=True)
 
@@ -629,6 +647,7 @@ with tab1:
                              linecolor=AXIS_LINE["color"])
             fig.update_yaxes(tickfont=AXIS_FONT, gridcolor=GRID_COLOR,
                              linecolor=AXIS_LINE["color"])
+            fig.update_annotations(font=dict(size=12, color="#111111"))
             st.plotly_chart(fig, use_container_width=True)
 
         with r1b:
@@ -655,6 +674,7 @@ with tab1:
             ))
             fig2.update_layout(**base_layout(370), legend=LEGEND_TOP)
             fig2 = style_axes(fig2, ytitle="M tonnes")
+            fig2.update_annotations(font=dict(size=12, color="#111111"))
             st.plotly_chart(fig2, use_container_width=True)
 
         r2a, r2b = st.columns(2)
@@ -688,6 +708,7 @@ with tab1:
             fig3.update_yaxes(title_text="Volume (M t)", tickfont=AXIS_FONT,
                               gridcolor=GRID_COLOR, secondary_y=True,
                               title_font=AXIS_FONT)
+            fig3.update_annotations(font=dict(size=12, color="#111111"))
             st.plotly_chart(fig3, use_container_width=True)
 
         with r2b:
@@ -719,6 +740,7 @@ with tab1:
             fig4.update_layout(**base_layout(310, dict(l=4,r=80,t=16,b=8)), showlegend=False)
             fig4 = style_axes(fig4, xtitle="USD per kg")
             fig4.update_yaxes(tickfont=dict(size=11, color="#1A1A1A"))
+            fig4.update_annotations(font=dict(size=12, color="#111111"))
             st.plotly_chart(fig4, use_container_width=True)
 
         st.markdown('<div class="sec-head">G4-OP4 — ASFIS Species Diversity Over Time</div>',
@@ -742,6 +764,7 @@ with tab1:
         ))
         fig5.update_layout(**base_layout(220, dict(l=4,r=4,t=12,b=4)), legend=LEGEND_TOP)
         fig5 = style_axes(fig5, ytitle="# Species")
+        fig5.update_annotations(font=dict(size=12, color="#111111"))
         st.plotly_chart(fig5, use_container_width=True)
 
         # ── KPI-8 — Top-N Concentration Ratio (CR5 / CR10) ───────────────────
@@ -789,6 +812,7 @@ with tab1:
             fig_cr.update_layout(**base_layout(200, dict(l=4,r=4,t=10,b=4)), legend=LEGEND_TOP)
             fig_cr = style_axes(fig_cr, ytitle="Share of global production (%)")
             fig_cr.update_yaxes(range=[0,105])
+            fig_cr.update_annotations(font=dict(size=12, color="#111111"))
             st.plotly_chart(fig_cr, use_container_width=True)
 
         with st.expander("📋 Production & Value Data Tables"):
@@ -868,6 +892,7 @@ with tab2:
             marker=dict(line=dict(width=1.5, color="#FFFFFF")),
         )
         fig_tree.update_layout(**base_layout(360, dict(l=4,r=4,t=10,b=4)))
+        fig_tree.update_annotations(font=dict(size=12, color="#111111"))
         st.plotly_chart(fig_tree, use_container_width=True)
 
         st.markdown("<br>", unsafe_allow_html=True)
@@ -901,6 +926,7 @@ with tab2:
                     showarrow=False,
                 )],
             )
+            fig6.update_annotations(font=dict(size=12, color="#111111"))
             st.plotly_chart(fig6, use_container_width=True)
 
         with gb:
@@ -921,6 +947,7 @@ with tab2:
             fig7.update_layout(**base_layout(320, dict(l=4,r=80,t=10,b=4)), legend=LEGEND_TOP)
             fig7 = style_axes(fig7, xtitle="Million tonnes (cumulative)")
             fig7.update_yaxes(tickfont=dict(size=11, color="#1A1A1A"))
+            fig7.update_annotations(font=dict(size=12, color="#111111"))
             st.plotly_chart(fig7, use_container_width=True)
 
         gi, gj = st.columns(2)
@@ -944,6 +971,7 @@ with tab2:
             fig8.update_xaxes(tickfont=AXIS_FONT, gridcolor=GRID_COLOR)
             fig8.update_yaxes(tickfont=AXIS_FONT, gridcolor=GRID_COLOR,
                               title_font=AXIS_FONT, title_text="M tonnes")
+            fig8.update_annotations(font=dict(size=12, color="#111111"))
             st.plotly_chart(fig8, use_container_width=True)
 
         with gj:
@@ -962,6 +990,7 @@ with tab2:
             fig9.update_xaxes(tickfont=AXIS_FONT, gridcolor=GRID_COLOR)
             fig9.update_yaxes(tickfont=AXIS_FONT, gridcolor=GRID_COLOR,
                               title_font=AXIS_FONT, title_text="M tonnes")
+            fig9.update_annotations(font=dict(size=12, color="#111111"))
             st.plotly_chart(fig9, use_container_width=True)
 
         # ── KPI-18 & KPI-19 — new row ─────────────────────────────────────────
@@ -986,6 +1015,7 @@ with tab2:
             fig18.update_yaxes(tickfont=AXIS_FONT, gridcolor=GRID_COLOR,
                                title_font=AXIS_FONT, title_text="Share (%)",
                                ticksuffix="%", range=[0,100])
+            fig18.update_annotations(font=dict(size=12, color="#111111"))
             st.plotly_chart(fig18, use_container_width=True)
 
         with gl:
@@ -1017,6 +1047,7 @@ with tab2:
                 ))
             fig19.update_layout(**base_layout(280, dict(l=4,r=4,t=10,b=4)), legend=LEGEND_BOTTOM)
             fig19 = style_axes(fig19, ytitle="USD / tonne")
+            fig19.update_annotations(font=dict(size=12, color="#111111"))
             st.plotly_chart(fig19, use_container_width=True)
 
         with st.expander("📋 Geographic & Species Data Tables"):
@@ -1135,6 +1166,7 @@ with tab3:
                          gridcolor=GRID_COLOR, title_font=AXIS_FONT, secondary_y=False)
         fpm.update_yaxes(title_text="Permitted Farms", tickfont=AXIS_FONT,
                          gridcolor=GRID_COLOR, title_font=AXIS_FONT, secondary_y=True)
+        fpm.update_annotations(font=dict(size=12, color="#111111"))
         st.plotly_chart(fpm, use_container_width=True)
 
     with pm2:
@@ -1154,6 +1186,7 @@ with tab3:
         fpm2.update_yaxes(title_text="Compliance (%)", tickfont=AXIS_FONT,
                           gridcolor=GRID_COLOR, title_font=AXIS_FONT,
                           secondary_y=True, range=[85, 100])
+        fpm2.update_annotations(font=dict(size=12, color="#111111"))
         st.plotly_chart(fpm2, use_container_width=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
@@ -1177,6 +1210,7 @@ with tab3:
                           gridcolor=GRID_COLOR, title_font=AXIS_FONT, secondary_y=False)
     farm_fig.update_yaxes(title_text="Farm Area (ha)", tickfont=AXIS_FONT,
                           gridcolor=GRID_COLOR, title_font=AXIS_FONT, secondary_y=True)
+    farm_fig.update_annotations(font=dict(size=12, color="#111111"))
     st.plotly_chart(farm_fig, use_container_width=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
@@ -1223,6 +1257,7 @@ with tab3:
         ))
         fso.update_layout(**base_layout(275), legend=LEGEND_TOP)
         fso = style_axes(fso)
+        fso.update_annotations(font=dict(size=12, color="#111111"))
         st.plotly_chart(fso, use_container_width=True)
 
     with ss2:
@@ -1237,6 +1272,7 @@ with tab3:
         ))
         ftr.update_layout(**base_layout(275, dict(l=4,r=4,t=10,b=30)), showlegend=False)
         ftr = style_axes(ftr, ytitle="Individuals trained")
+        ftr.update_annotations(font=dict(size=12, color="#111111"))
         st.plotly_chart(ftr, use_container_width=True)
 
     with st.expander("📋 Permitting & Social Data Tables"):
@@ -1326,6 +1362,7 @@ with tab4:
             xaxis=dict(tickfont=AXIS_FONT, title=dict(text="Year", font=AXIS_FONT)),
             yaxis=dict(tickfont=dict(size=11, color="#1A1A1A")),
         )
+        fig14.update_annotations(font=dict(size=12, color="#111111"))
         st.plotly_chart(fig14, use_container_width=True)
 
         st.markdown("<br>", unsafe_allow_html=True)
@@ -1363,6 +1400,7 @@ with tab4:
             fig20.update_xaxes(tickfont=AXIS_FONT, gridcolor=GRID_COLOR)
             fig20.update_yaxes(tickfont=AXIS_FONT, gridcolor=GRID_COLOR,
                                title_font=AXIS_FONT, title_text="M tonnes")
+            fig20.update_annotations(font=dict(size=12, color="#111111"))
             st.plotly_chart(fig20, use_container_width=True)
 
         with t4r1b:
@@ -1402,6 +1440,7 @@ with tab4:
                                showlegend=False)
             fig24 = style_axes(fig24, xtitle="Price std dev (USD/kg)")
             fig24.update_yaxes(tickfont=dict(size=11, color="#1A1A1A"))
+            fig24.update_annotations(font=dict(size=12, color="#111111"))
             st.plotly_chart(fig24, use_container_width=True)
 
         st.markdown("<br>", unsafe_allow_html=True)
@@ -1445,6 +1484,7 @@ with tab4:
             fig21 = style_axes(fig21,
                 xtitle="Aquaculture Share of Total Seaweed Production (%)",
                 ytitle="Farmed Volume (tonnes, log scale)")
+            fig21.update_annotations(font=dict(size=12, color="#111111"))
             st.plotly_chart(fig21, use_container_width=True)
 
         with t4r2b:
@@ -1481,6 +1521,7 @@ with tab4:
             fig25 = style_axes(fig25, xtitle="Top Species Share (%)")
             fig25.update_yaxes(tickfont=dict(size=11, color="#1A1A1A"))
             fig25.update_xaxes(range=[0,120])
+            fig25.update_annotations(font=dict(size=12, color="#111111"))
             st.plotly_chart(fig25, use_container_width=True)
 
         st.markdown("<br>", unsafe_allow_html=True)
@@ -1526,6 +1567,7 @@ with tab4:
             fig22 = style_axes(fig22,
                 xtitle=f"CAGR % (last {cagr_win} years)",
                 ytitle=f"Production {LY} (M tonnes, log)")
+            fig22.update_annotations(font=dict(size=12, color="#111111"))
             st.plotly_chart(fig22, use_container_width=True)
 
             # KPI-23: Emerging producers table
@@ -1583,6 +1625,7 @@ with tab4:
             fig26 = style_axes(fig26, xtitle="Data Completeness (%)")
             fig26.update_yaxes(tickfont=dict(size=11, color="#1A1A1A"))
             fig26.update_xaxes(range=[0,120])
+            fig26.update_annotations(font=dict(size=12, color="#111111"))
             st.plotly_chart(fig26, use_container_width=True)
 
         with st.expander("📋 Advanced Analytics Data Tables"):
@@ -2191,6 +2234,11 @@ def retrieve_context(query: str, top_k: int = 4) -> str:
 # SYSTEM PROMPT  (RAG-augmented)
 # ─────────────────────────────────────────────────────────────────────────────
 def build_system_prompt(query: str = "", is_uc2: bool = False) -> str:
+    """
+    Build the system prompt for the PSIA AI assistant.
+    Order: (1) Instructions + disambiguation, (2) Live data [UC2], (3) RAG background.
+    Live data comes BEFORE RAG so the LLM anchors on real dashboard numbers first.
+    """
     base = (
         "You are the PSIA (Pacific Seaweed Industry Association) AI assistant "
         "embedded in a seaweed analytics dashboard. Answer questions about the "
@@ -2199,65 +2247,228 @@ def build_system_prompt(query: str = "", is_uc2: bool = False) -> str:
         "and PSIA initiatives.\n\n"
         "== CRITICAL DATA DISAMBIGUATION ==\n"
         "This dashboard tracks SEAWEED-ONLY production from FAO FishStat. "
-        "When a user asks about 'production', 'global production', or 'total production', "
-        "they always mean SEAWEED-ONLY — NOT total global aquaculture (all species). "
+        "'Production', 'global production', and 'total production' always mean "
+        "SEAWEED-ONLY — NEVER total global aquaculture (all species). "
         "NEVER cite the 112 million tonnes all-species figure as seaweed production. "
-        "Global seaweed-only production in 2017 was ~33.7 million tonnes. "
-        "Global seaweed-only production in 2024 was approximately 40 million tonnes. "
-        "The 112M tonne figure (FAO 2017) = ALL aquaculture combined (fish + shellfish + "
-        "seaweed + freshwater). If you cite it, always label it explicitly as "
-        "'total all-species aquaculture' to prevent confusion.\n\n"
-        "Be concise and data-specific. Keep answers to 3–5 sentences for simple questions. "
+        "Seaweed-only: ~33.7M t in 2017, ~40M t in 2024. "
+        "The 112M figure (FAO 2017) = ALL aquaculture (fish + shellfish + seaweed combined). "
+        "Be concise and data-specific. 3–5 sentences for simple questions. "
         "Always cite your source when using specific numbers."
     )
-    rag_ctx = retrieve_context(query, top_k=4)
-    if rag_ctx:
-        base += f"\n\n== RETRIEVED KNOWLEDGE (use this to answer) ==\n{rag_ctx}"
 
-    if is_uc2:
-        if data_ok:
-            cont_s = (fgp[fgp["period"]==LY]
-                      .groupby("continent_group_en")["value"].sum()
-                      .sort_values(ascending=False))
-            cont_lines = "\n".join([
-                f"  {k}: {v/cont_s.sum()*100:.1f}%"
-                for k, v in cont_s.items() if k != "Unknown"])
-            sp5 = (faq.groupby("seaweed_name")["value"].sum()
-                   .sort_values(ascending=False).head(5))
-            sp_lines = "\n".join([f"  {k}: {v/1e6:.1f}M t" for k, v in sp5.items()])
-            ig_s = (fgp[fgp["period"]==LY]
-                    .groupby("ecoclass_group_en")["value"].sum()
-                    .sort_values(ascending=False))
-            ig_lines = "\n".join([
-                f"  {k}: {v/ig_s.sum()*100:.1f}%" for k, v in ig_s.items()])
-            # Build year-by-year historical lookup for specific year questions
-            hist_years = [y for y in [2000,2005,2010,2015,2017,2018,2019,2020,2021,2022,LY]
-                          if y in fgp["period"].values and fgp[fgp["period"]==y]["value"].sum() > 0]
-            hist_lines = "\n".join([
-                f"  {y}: {fgp[fgp['period']==y]['value'].sum()/1e6:.2f}M t"
-                for y in sorted(hist_years)])
-            base += f"""
+    # ── UC2: inject ALL live dashboard data FIRST, before RAG ─────────────────
+    if is_uc2 and data_ok:
+        # ── Tab 1: Production & Value ──────────────────────────────────────────
+        # Historical production by year
+        hist_yrs = sorted([
+            y for y in fgp["period"].unique()
+            if fgp[fgp["period"]==y]["value"].sum() > 0
+        ])
+        hist_lines = "\n".join([
+            f"  {y}: {fgp[fgp['period']==y]['value'].sum()/1e6:.2f}M t"
+            for y in hist_yrs
+        ])
 
-== LIVE DASHBOARD DATA — SEAWEED ONLY ({year_range[0]}–{year_range[1]}) ==
-All figures are SEAWEED-SPECIFIC from FAO FishStat. Do NOT mix with all-species aquaculture.
+        # Species prices (top 10)
+        av_sp = fav.groupby(["period","seaweed_name"])["value"].sum().reset_index()
+        aq_sp = faq.groupby(["period","seaweed_name"])["value"].sum().reset_index()
+        av_sp.columns = ["year","species","usd_k"]
+        aq_sp.columns = ["year","species","tonnes"]
+        jp_sp = av_sp.merge(aq_sp, on=["year","species"])
+        jp_sp = jp_sp[(jp_sp["tonnes"]>100) & (jp_sp["usd_k"]>0)]
+        jp_sp["usd_kg"] = jp_sp["usd_k"]*1000/jp_sp["tonnes"]/1000
+        sp_price_agg = (jp_sp[jp_sp["usd_kg"]<20]
+                        .groupby("species")
+                        .agg(avg_price=("usd_kg","mean"), tot_vol=("tonnes","sum"))
+                        .reset_index()
+                        .nlargest(10,"tot_vol")
+                        .sort_values("tot_vol",ascending=False))
+        price_lines = "\n".join([
+            f"  {row['species']}: ${row['avg_price']:.3f}/kg avg"
+            for _, row in sp_price_agg.iterrows()
+        ])
 
-Seaweed production ({LY}): {prod_tot/1e6:.2f}M t · YoY {yoy_prod:.1f}% · CAGR {cagr_prod:.1f}%
-  Farmed seaweed: {aq_tot/1e6:.2f}M t ({aq_tot/prod_tot*100:.1f}% of seaweed total)
-  Wild seaweed:   {wc_tot/1e6:.3f}M t ({wc_tot/prod_tot*100:.1f}% of seaweed total)
-  ASFIS seaweed species: {sp_total} (farmed:{sp_cult}, wild:{sp_wild})
-  Avg seaweed price/kg: ${avg_price_kg:.2f}
-Seaweed value ({LY}): USD ${val_tot/1e6:.1f}B · YoY {yoy_val:.1f}%
-Continental share of seaweed production:
-{cont_lines}
-Top 5 seaweed species by volume:
-{sp_lines}
-Income group share of seaweed production:
-{ig_lines}
-Canadian seaweed farms (estimated): 97 operations · 3,340 ha
+        # CR5 / CR10
+        cr_data = (fgp[fgp["value"]>0]
+                   .groupby(["period","country_name"])["value"].sum().reset_index())
+        ly_cr = cr_data[cr_data["period"]==LY]
+        tot_cr = ly_cr["value"].sum()
+        sorted_cr = ly_cr["value"].sort_values(ascending=False).values
+        cr5  = sorted_cr[:5].sum()/tot_cr*100  if len(sorted_cr)>=5  else 0
+        cr10 = sorted_cr[:10].sum()/tot_cr*100 if len(sorted_cr)>=10 else 0
 
-Historical seaweed-only production (FAO FishStat, selected years):
+        # ── Tab 2: Geographic & Species ───────────────────────────────────────
+        # Continental breakdown
+        cont_s = (fgp[fgp["period"]==LY]
+                  .groupby("continent_group_en")["value"].sum()
+                  .sort_values(ascending=False))
+        cont_lines = "\n".join([
+            f"  {k}: {v/cont_s.sum()*100:.1f}% ({v/1e6:.2f}M t)"
+            for k, v in cont_s.items() if k != "Unknown"
+        ])
+
+        # Top 15 countries by latest year production
+        top15_c = (fgp[fgp["period"]==LY]
+                   .groupby("country_name")["value"].sum()
+                   .sort_values(ascending=False).head(15))
+        country_lines = "\n".join([
+            f"  {i+1}. {c}: {v/1e6:.3f}M t ({v/fgp[fgp['period']==LY]['value'].sum()*100:.1f}%)"
+            for i,(c,v) in enumerate(top15_c.items())
+        ])
+
+        # Top 10 species
+        sp10 = (faq.groupby("seaweed_name")["value"].sum()
+                .sort_values(ascending=False).head(10))
+        sp_lines = "\n".join([
+            f"  {i+1}. {s}: {v/1e6:.2f}M t cumulative"
+            for i,(s,v) in enumerate(sp10.items())
+        ])
+
+        # Income group breakdown + value per tonne
+        ig_s = (fgp[fgp["period"]==LY]
+                .groupby("ecoclass_group_en")["value"].sum()
+                .sort_values(ascending=False))
+        ig_lines = "\n".join([
+            f"  {k}: {v/ig_s.sum()*100:.1f}% ({v/1e6:.2f}M t)"
+            for k, v in ig_s.items()
+        ])
+        av_ig = (fav[fav["value"]>0]
+                 .groupby(["period","ecoclass_group_en"])["value"].sum()
+                 .reset_index().rename(columns={"value":"usd_k"}))
+        aq_ig = (faq[faq["value"]>0]
+                 .groupby(["period","ecoclass_group_en"])["value"].sum()
+                 .reset_index().rename(columns={"value":"tonnes_ig"}))
+        vpt_df = av_ig.merge(aq_ig, on=["period","ecoclass_group_en"])
+        vpt_df = vpt_df[vpt_df["period"]==LY]
+        vpt_df["usd_per_t"] = vpt_df["usd_k"]*1000/vpt_df["tonnes_ig"]
+        vpt_lines = "\n".join([
+            f"  {row['ecoclass_group_en']}: ${row['usd_per_t']:,.0f}/t"
+            for _, row in vpt_df.sort_values("usd_per_t",ascending=False).iterrows()
+        ])
+
+        # ── Tab 3: Permitting & Social (estimated) ────────────────────────────
+        perm_ly = sim_perm[sim_perm["year"]==sim_perm["year"].max()].iloc[0]
+        soc_ly  = sim_social[sim_social["year"]==sim_social["year"].max()].iloc[0]
+
+        # ── Tab 4: Advanced Analytics ─────────────────────────────────────────
+        # Top growing countries (CAGR)
+        cagr_base_yr = max(LY - cagr_win, year_range[0])
+        c_base = (fgp[fgp["period"]==cagr_base_yr]
+                  .groupby("country_name")["value"].sum().reset_index()
+                  .rename(columns={"value":"base_v"}))
+        c_last = (fgp[fgp["period"]==LY]
+                  .groupby("country_name")["value"].sum().reset_index()
+                  .rename(columns={"value":"last_v"}))
+        cagr_df = c_base.merge(c_last, on="country_name")
+        cagr_df = cagr_df[(cagr_df["base_v"]>0) & (cagr_df["last_v"]>1000)]
+        cagr_df["cagr"] = ((cagr_df["last_v"]/cagr_df["base_v"])**(1/cagr_win)-1)*100
+        top_grow = cagr_df.nlargest(10,"cagr")[["country_name","cagr","last_v"]]
+        cagr_lines = "\n".join([
+            f"  {row['country_name']}: {row['cagr']:.1f}% CAGR ({row['last_v']/1e3:.0f}k t)"
+            for _, row in top_grow.iterrows()
+        ])
+
+        # Adoption rates (top 10)
+        aq_adopt = faq.groupby(["period","country_name"])["value"].sum().reset_index()
+        cq_adopt = fcq.groupby(["period","country_name"])["value"].sum().reset_index()
+        aq_adopt.columns = ["year","country","aq"]
+        cq_adopt.columns = ["year","country","cap"]
+        adopt = aq_adopt.merge(cq_adopt, on=["year","country"], how="outer").fillna(0)
+        adopt_ly = adopt[adopt["year"]==LY].copy()
+        adopt_ly["total"] = adopt_ly["aq"] + adopt_ly["cap"]
+        adopt_ly = adopt_ly[adopt_ly["total"]>0]
+        adopt_ly["rate"] = adopt_ly["aq"]/adopt_ly["total"]*100
+        top_adopt = adopt_ly.nlargest(10,"aq")[["country","rate","aq"]]
+        adopt_lines = "\n".join([
+            f"  {row['country']}: {row['rate']:.1f}% farmed ({row['aq']/1e6:.3f}M t)"
+            for _, row in top_adopt.iterrows()
+        ])
+
+        # Price volatility top 5
+        jp_sp["yr_kg"] = jp_sp["usd_kg"]
+        vola = (jp_sp[jp_sp["usd_kg"]<20]
+                .groupby("species")["yr_kg"]
+                .agg(["std","count"]).reset_index()
+                .rename(columns={"std":"vol_std","count":"n"}))
+        vola = vola[vola["n"]>=5].dropna().nlargest(5,"vol_std")
+        vola_lines = "\n".join([
+            f"  {row['species']}: σ={row['vol_std']:.3f} $/kg"
+            for _, row in vola.iterrows()
+        ])
+
+        base += f"""
+
+╔══════════════════════════════════════════════════════════════╗
+║  LIVE DASHBOARD DATA — SEAWEED ONLY ({year_range[0]}–{year_range[1]})              ║
+║  Source: FAO FishStat CSVs + DFO/CIRNAC estimates           ║
+║  Use these numbers to answer ALL data questions.             ║
+╚══════════════════════════════════════════════════════════════╝
+
+── TAB 1: PRODUCTION & VALUE ──────────────────────────────────
+Latest year ({LY}) overview:
+  Total seaweed production : {prod_tot/1e6:.2f}M tonnes
+  YoY growth               : {yoy_prod:+.1f}%
+  {cagr_win}-year CAGR         : {cagr_prod:.1f}%
+  Farmed (aquaculture)     : {aq_tot/1e6:.2f}M t ({aq_tot/prod_tot*100:.1f}%)
+  Wild capture             : {wc_tot/1e6:.3f}M t ({wc_tot/prod_tot*100:.1f}%)
+  ASFIS species tracked    : {sp_total} total (farmed:{sp_cult}, wild:{sp_wild})
+  Avg seaweed price        : ${avg_price_kg:.2f}/kg
+  Total seaweed value      : USD ${val_tot/1e6:.1f}B (YoY {yoy_val:+.1f}%)
+  Market concentration     : CR5={cr5:.1f}%, CR10={cr10:.1f}%
+
+Production by year (seaweed-only, ALL years):
 {hist_lines}
+
+Top 10 species average price (implied USD/kg):
+{price_lines}
+
+── TAB 2: GEOGRAPHIC & SPECIES ────────────────────────────────
+Continental share ({LY}):
+{cont_lines}
+
+Top 15 countries by seaweed production ({LY}):
+{country_lines}
+
+Top 10 seaweed species by cumulative farmed volume:
+{sp_lines}
+
+Income group production share ({LY}):
+{ig_lines}
+
+Value per tonne by income group ({LY}):
+{vpt_lines}
+
+── TAB 3: PERMITTING & SOCIAL (Canada — estimated from public reports) ──
+  ADA designated areas     : {int(perm_ly['ada_ha']):,} ha
+  Licensed farms (total)   : {int(perm_ly['permitted_farms'])}
+  Seaweed-specific farms   : {int(perm_ly['seaweed_farms'])}
+  Seaweed farm area        : {int(perm_ly['seaweed_area_ha']):,} ha
+  AOAs assessed            : {int(perm_ly['aoa_count'])}
+  Fisheries Act compliance : {perm_ly['compliance_pct']:.1f}%
+  Social license score     : {int(soc_ly['agreements'])+60}/100
+  Indigenous agreements    : {int(soc_ly['agreements'])} MOUs/benefit agreements
+  Indigenous employed      : {int(soc_ly['employed'])} people
+  Indigenous trained       : {int(soc_ly['trained_indig'])} individuals
+  Total trained            : {int(soc_ly['trained_total'])} individuals
+
+── TAB 4: ADVANCED ANALYTICS ──────────────────────────────────
+Top 10 fastest-growing countries ({cagr_win}-yr CAGR):
+{cagr_lines}
+
+Top 10 countries by adoption rate (farmed ÷ total, {LY}):
+{adopt_lines}
+
+Top 5 most price-volatile seaweed species:
+{vola_lines}
 """
+
+    # ── RAG background knowledge (comes AFTER live data) ──────────────────────
+    # In UC2 use fewer RAG chunks (live data is primary); in UC1 use more
+    top_k_rag = 2 if is_uc2 else 4
+    rag_ctx = retrieve_context(query, top_k=top_k_rag)
+    if rag_ctx:
+        base += f"\n\n== BACKGROUND KNOWLEDGE (supplementary context) ==\n{rag_ctx}"
+
     return base
 
 
