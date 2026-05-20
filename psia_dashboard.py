@@ -1,5 +1,5 @@
 """
-PSIA Seaweed Industry Analytics Dashboard  — v16.0
+PSIA Seaweed Industry Analytics Dashboard  — v10.0
 ====================================================
   CHANGES FROM v9:
   - Tab 4 "🔬 Advanced Analytics" added with 6 remaining KPIs:
@@ -127,8 +127,8 @@ def base_layout(height=320, margin=None):
         paper_bgcolor="white",
         plot_bgcolor="#FAFAFA",
         font=CHART_FONT,
-        # Explicitly set title font so subplot_titles and chart titles are dark
-        title_font=TITLE_FONT,
+        # title.text must be "" (not absent) — absent title makes Plotly JS render "undefined"
+        title=dict(text="", font=TITLE_FONT),
     )
 
 def style_axes(fig, xtitle="", ytitle="", y2title="", y_range=None):
@@ -349,20 +349,26 @@ sim_perm, sim_social = build_simulated()
 # SIDEBAR
 # ─────────────────────────────────────────────────────────────────────────────
 with st.sidebar:
-    st.markdown(f"""
-    <div style="text-align:center;padding:20px 0 14px;">
-      <div style="font-size:36px;margin-bottom:8px;">🌿</div>
-      <div style="font-family:Georgia,serif;font-size:20px;font-weight:700;
-                  letter-spacing:0.3px;">PSIA Dashboard</div>
-      <div style="font-size:11px;color:#FFFFFF;margin-top:4px;
-                  letter-spacing:0.4px;opacity:0.9;">Pacific Seaweed Industry Association</div>
+    # ── Logo & branding ───────────────────────────────────────────────────────
+    st.markdown("""
+    <div style="text-align:center;padding:28px 12px 20px;
+                border-bottom:1px solid rgba(255,255,255,0.18);margin-bottom:18px;">
+      <div style="font-size:44px;margin-bottom:12px;line-height:1;">🌿</div>
+      <div style="font-family:Georgia,serif;font-size:21px;font-weight:700;
+                  color:#FFFFFF;letter-spacing:0.3px;line-height:1.2;">
+        PSIA Dashboard
+      </div>
+      <div style="font-size:11px;color:#C8EDE3;margin-top:8px;
+                  letter-spacing:0.5px;line-height:1.5;font-weight:400;">
+        Pacific Seaweed<br>Industry Association
+      </div>
     </div>""", unsafe_allow_html=True)
 
-    st.markdown("---")
+    # ── Filters label ──────────────────────────────────────────────────────────
     st.markdown(
-        f"<div style='font-size:11px;font-weight:700;letter-spacing:0.8px;"
-        f"text-transform:uppercase;color:#FFFFFF;margin-bottom:10px;'>"
-        "Dashboard Filters</div>",
+        "<div style='font-size:10px;font-weight:700;letter-spacing:1.4px;"
+        "text-transform:uppercase;color:#A8D8CC;margin-bottom:14px;"
+        "padding-bottom:4px;'>📊 Dashboard Filters</div>",
         unsafe_allow_html=True)
 
     y_min = int(gp["period"].min()) if data_ok else 1950
@@ -376,12 +382,17 @@ with st.sidebar:
     top_n    = st.selectbox("Top-N Species / Countries", [5, 10, 15], index=1)
     cagr_win = st.selectbox("CAGR Window (years)", [5, 10, 20], index=1)
 
-    st.markdown("---")
+    # ── Data sources legend ───────────────────────────────────────────────────
     st.markdown(
-        f"<div style='font-size:12px;color:#FFFFFF;line-height:2.0;'>"
-        "🟢 FAO FishStat — real data<br>"
+        "<div style='margin-top:22px;padding:14px 12px;background:rgba(255,255,255,0.07);"
+        "border-radius:8px;border:1px solid rgba(255,255,255,0.12);'>"
+        "<div style='font-size:10px;font-weight:700;letter-spacing:1.2px;"
+        "text-transform:uppercase;color:#A8D8CC;margin-bottom:10px;'>Data Sources</div>"
+        "<div style='font-size:13px;color:#FFFFFF;line-height:2.2;'>"
+        "🟢 FAO FishStat — real<br>"
         "📊 DFO / CIRNAC — estimated<br>"
-        "📅 Data through 2024</div>",
+        "📅 Data through 2024"
+        "</div></div>",
         unsafe_allow_html=True)
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -2569,33 +2580,39 @@ if "chat_mode" not in st.session_state: st.session_state.chat_mode = "UC1"
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# CHAT PANEL  — fixed right column
+# CHAT PANEL  — fixed right column, clean redesign
 # ─────────────────────────────────────────────────────────────────────────────
 with _chat_col:
     is_uc2    = st.session_state.chat_mode == "UC2"
-    rag_badge = f"🔍 RAG ({len(RAG_DOCS)} docs)" if _rag_ok else "💬"
+    rag_badge = f"🔍 {len(RAG_DOCS)} docs" if _rag_ok else "💬 No RAG"
 
-    # Header
+    # ── Header ────────────────────────────────────────────────────────────────
     st.markdown(f"""
-    <div style="background:{C['t600']};color:#FFFFFF;
-                padding:14px 18px 12px;border-radius:12px 12px 0 0;
-                box-shadow:0 2px 8px rgba(0,0,0,0.15);">
-      <div style="font-size:15px;font-weight:700;font-family:Georgia,serif;
-                  letter-spacing:0.2px;margin-bottom:3px;">
-        🌿 PSIA AI Assistant
-      </div>
-      <div style="font-size:12px;color:#CCEEDD;font-family:Inter,Arial,sans-serif;
-                  margin-top:3px;font-weight:400;">
-        {rag_badge} · Powered by Groq
+    <div style="background:linear-gradient(135deg,{C['t800']} 0%,{C['t600']} 100%);
+                color:#FFFFFF;padding:16px 18px 14px;border-radius:12px 12px 0 0;
+                box-shadow:0 3px 12px rgba(0,0,0,0.20);">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div>
+          <div style="font-size:15px;font-weight:700;font-family:Georgia,serif;
+                      letter-spacing:0.2px;margin-bottom:4px;">
+            🌿 PSIA AI Assistant
+          </div>
+          <div style="font-size:11px;color:#C8EDE3;font-family:Inter,Arial,sans-serif;
+                      font-weight:400;">{rag_badge} · Powered by Groq</div>
+        </div>
+        <div style="font-size:10px;color:#A8D8CC;font-family:Inter,Arial,sans-serif;
+                    text-align:right;padding-top:2px;">
+          {"📊 Live Data" if is_uc2 else "💬 Industry"}
+        </div>
       </div>
     </div>""", unsafe_allow_html=True)
 
-    # Mode toggle strip — white background so radio labels are clearly readable
+    # ── Mode toggle ───────────────────────────────────────────────────────────
     st.markdown(
-        '<div style="background:#FFFFFF;padding:8px 14px 4px;'
-        'border-left:1px solid #CCCCCC;border-right:1px solid #CCCCCC;">'
+        '<div style="background:#F0F4F2;padding:8px 14px 6px;'
+        'border-left:1px solid #CCCCCC;border-right:1px solid #CCCCCC;'
+        'border-bottom:1px solid #E0E0E0;">'
         '</div>', unsafe_allow_html=True)
-
     _mc1, _mc2 = st.columns([3, 1])
     with _mc1:
         mode_choice = st.radio(
@@ -2614,61 +2631,58 @@ with _chat_col:
             st.session_state.messages = []
             st.rerun()
 
-    # Message history ─ every text node gets explicit color:#FFFFFF inline
-    # so Streamlit's own CSS cascade can never override it
-    _WHITE = "color:#FFFFFF;font-family:Inter,Arial,sans-serif;"
+    # ── Message history ───────────────────────────────────────────────────────
+    # Every text node has explicit color:#FFFFFF inline — Streamlit CSS cannot override
+    _W = "color:#FFFFFF;font-family:Inter,Arial,sans-serif;"
     hist_html = (
-        f'<div class="chat-hist-wrap" '
-        f'style="background:{C["t900"]};min-height:320px;max-height:420px;'
-        f'overflow-y:auto;padding:14px 14px 10px;{_WHITE}'
+        f'<div class="chat-hist-wrap" style="'
+        f'background:{C["t900"]};min-height:300px;max-height:400px;'
+        f'overflow-y:auto;padding:16px 14px 12px;{_W}'
         f'border-left:1px solid {C["t800"]};border-right:1px solid {C["t800"]};">'
     )
     if not st.session_state.messages:
         hist_html += (
             '<div class="chat-welcome" '
-            f'style="background:#1A6B50;border-radius:10px 10px 10px 2px;'
-            f'padding:14px 16px;margin-bottom:12px;{_WHITE}font-size:14px;line-height:1.70;">'
-            '<span style="color:#FFFFFF;font-size:14px;line-height:1.70;display:block;">'
-            "Hi! I'm the PSIA AI Assistant. Ask me about the seaweed industry, "
-            "BC regulations, social license, production costs, First Nations "
-            "aquaculture, or live dashboard data."
+            'style="background:rgba(255,255,255,0.10);border-radius:10px 10px 10px 2px;'
+            f'padding:14px 16px;margin-bottom:12px;{_W}font-size:13px;line-height:1.72;'
+            'border:1px solid rgba(255,255,255,0.12);">'
+            '<span style="color:#FFFFFF;font-size:13px;line-height:1.72;display:block;">'
+            "<strong style='color:#C8EDE3;'>Hi! I'm the PSIA AI Assistant.</strong><br>"
+            "Ask me about the seaweed industry, BC regulations, social license, "
+            "production costs, First Nations aquaculture, or live dashboard data."
             '</span>'
             '</div>'
         )
     for m in st.session_state.messages:
-        u   = m["role"] == "user"
-        bg  = "#1D6E50" if u else "#17523C"
-        br  = "14px 14px 2px 14px" if u else "14px 14px 14px 2px"
-        mg  = "margin-left:24px" if u else "margin-right:24px"
-        ico = "You" if u else "🌿 PSIA"
-        align = "text-align:right;" if u else ""
-        cls = "chat-bubble-user" if u else "chat-bubble-bot"
-        # Escape any characters that would break HTML attributes
-        content = str(m["content"]).replace("<", "&lt;").replace(">", "&gt;")
+        u      = m["role"] == "user"
+        bg     = f"{C['t400']}" if u else "rgba(255,255,255,0.10)"
+        br     = "14px 14px 3px 14px" if u else "14px 14px 14px 3px"
+        mg     = "margin-left:20px" if u else "margin-right:20px"
+        lbl    = "You" if u else "🌿 PSIA"
+        align  = "text-align:right;" if u else ""
+        cls    = "chat-bubble-user" if u else "chat-bubble-bot"
+        lbl_col = "rgba(255,255,255,0.70)"
+        content = str(m["content"]).replace("<","&lt;").replace(">","&gt;")
         hist_html += (
-            # Icon label
-            f'<div class="chat-icon-label" '
-            f'style="{_WHITE}font-size:10px;font-weight:600;opacity:0.82;'
-            f'margin-bottom:3px;{align}">'
-            f'<span style="color:#FFFFFF;">{ico}</span></div>'
-            # Bubble
-            f'<div class="{cls}" '
-            f'style="background:{bg};border-radius:{br};{_WHITE}'
-            f'padding:11px 14px;margin-bottom:10px;{mg};'
-            f'font-size:14px;line-height:1.62;word-wrap:break-word;">'
-            f'<span style="color:#FFFFFF;font-size:14px;line-height:1.62;">{content}</span>'
+            f'<div class="chat-icon-label" style="{_W}font-size:10px;font-weight:600;'
+            f'color:{lbl_col};margin-bottom:3px;{align}">'
+            f'<span style="color:{lbl_col};">{lbl}</span></div>'
+            f'<div class="{cls}" style="background:{bg};border-radius:{br};{_W}'
+            f'padding:10px 14px;margin-bottom:10px;{mg};border:1px solid rgba(255,255,255,0.12);'
+            f'font-size:13px;line-height:1.62;word-wrap:break-word;">'
+            f'<span style="color:#FFFFFF;font-size:13px;line-height:1.62;">{content}</span>'
             f'</div>'
         )
     if st.session_state.thinking:
         hist_html += (
-            f'<div style="{_WHITE}font-size:13px;font-style:italic;opacity:0.80;padding:4px 2px 8px;">'
-            '<span style="color:#FFFFFF;">⏳ Thinking…</span>'
-            '</div>'
+            f'<div style="{_W}font-size:13px;font-style:italic;'
+            'color:rgba(255,255,255,0.75);padding:6px 2px 10px;">'
+            '<span style="color:rgba(255,255,255,0.75);">⏳ Thinking…</span></div>'
         )
     hist_html += "</div>"
     st.markdown(hist_html, unsafe_allow_html=True)
 
-    # Suggestion chips
+    # ── Suggestion chips ──────────────────────────────────────────────────────
     SUGG = {
         False: [
             "What are BC's seaweed aquaculture regulations?",
@@ -2676,21 +2690,19 @@ with _chat_col:
             "What is the FNFC Aquaculture Action Plan?",
         ],
         True: [
-            f"What is total production in {LY if data_ok else 2024}?",
+            f"What is total seaweed production in {LY if data_ok else 2024}?",
             "Which continent produces the most seaweed?",
-            "What is the average price per kg?",
+            "What is the compliance rate in Canada?",
         ],
     }
-
     st.markdown(
-        '<div style="background:#F7F7F7;padding:8px 14px 4px;'
+        '<div style="background:#EEF4F1;padding:8px 14px 4px;'
         'border-left:1px solid #CCCCCC;border-right:1px solid #CCCCCC;">'
-        '<span style="font-size:12px;font-weight:600;color:#333333;'
-        'font-family:Inter,Arial,sans-serif;">Try asking:</span>'
+        '<span style="font-size:11px;font-weight:700;color:#444444;'
+        'font-family:Inter,Arial,sans-serif;letter-spacing:0.3px;">Try asking:</span>'
         '</div>', unsafe_allow_html=True)
-
     st.markdown(
-        '<div style="background:#F7F7F7;padding:0 10px 8px;'
+        '<div style="background:#EEF4F1;padding:4px 10px 8px;'
         'border-left:1px solid #CCCCCC;border-right:1px solid #CCCCCC;">',
         unsafe_allow_html=True)
     for sugg in SUGG[is_uc2]:
@@ -2699,14 +2711,12 @@ with _chat_col:
             st.rerun()
     st.markdown("</div>", unsafe_allow_html=True)
 
-    # Input row
+    # ── Input row ─────────────────────────────────────────────────────────────
     st.markdown(
-        '<div style="background:#FFFFFF;padding:10px 12px;'
-        'border-radius:0 0 12px 12px;'
-        'border:1px solid #CCCCCC;border-top:none;'
-        'box-shadow:0 4px 12px rgba(0,0,0,0.10);">'
+        '<div style="background:#FFFFFF;padding:10px 12px 8px;'
+        'border-radius:0 0 12px 12px;border:1px solid #CCCCCC;border-top:none;'
+        'box-shadow:0 4px 14px rgba(0,0,0,0.10);">'
         '</div>', unsafe_allow_html=True)
-
     _ic, _bc = st.columns([5, 1])
     with _ic:
         txt_input = st.text_input(
@@ -2716,34 +2726,29 @@ with _chat_col:
             label_visibility="collapsed",
         )
     with _bc:
-        send_clicked = st.button(
-            "Send", key="chat_send",
-            use_container_width=True,
-            type="primary",
-        )
+        send_clicked = st.button("Send", key="chat_send",
+                                 use_container_width=True, type="primary")
 
     if _rag_ok:
         st.markdown(
-            '<div style="font-size:11px;color:#444444;font-weight:500;'
-            'font-family:Inter,Arial,sans-serif;text-align:center;margin-top:4px;">'
-            f'🔍 {len(RAG_DOCS)} knowledge docs · top-4 retrieval'
+            f'<div style="font-size:10px;color:#666666;font-weight:500;'
+            'font-family:Inter,Arial,sans-serif;text-align:center;margin-top:3px;">'
+            f'🔍 {len(RAG_DOCS)} knowledge docs · top-{"2 (Live)" if is_uc2 else "4 (Info)"} retrieval'
             '</div>', unsafe_allow_html=True)
     else:
         st.markdown(
-            '<div style="font-size:11px;color:#CC0000;font-weight:600;'
-            'font-family:Inter,Arial,sans-serif;text-align:center;margin-top:4px;">'
+            '<div style="font-size:10px;color:#CC0000;font-weight:600;'
+            'font-family:Inter,Arial,sans-serif;text-align:center;margin-top:3px;">'
             '⚠️ pip install scikit-learn to enable RAG'
             '</div>', unsafe_allow_html=True)
 
     pending = st.session_state.pop("_pending", None)
     prompt  = pending or (txt_input.strip() if send_clicked and txt_input.strip() else None)
-
     if prompt and not st.session_state.thinking:
         st.session_state.messages.append({"role": "user", "content": prompt})
         st.session_state["_last_prompt"] = prompt
         st.session_state.thinking = True
         st.rerun()
-
 
 # ─────────────────────────────────────────────────────────────────────────────
 # GROQ API CALL
