@@ -1,5 +1,5 @@
 """
-PSIA Seaweed Industry Analytics Dashboard  — v18.0
+PSIA Seaweed Industry Analytics Dashboard  — v10.0
 ====================================================
   CHANGES FROM v9:
   - Tab 4 "🔬 Advanced Analytics" added with 6 remaining KPIs:
@@ -206,12 +206,73 @@ html, body, [class*="css"] {{
 
 /* ── Sidebar ─────────────────────────────────────────────────────────────── */
 [data-testid="stSidebar"] {{ background: {C['t900']}; padding-top: 0; }}
+
+/* Override Streamlit red/coral primary theme colour for ALL sidebar elements */
+[data-testid="stSidebar"],
 [data-testid="stSidebar"] * {{ color: #FFFFFF !important; }}
-[data-testid="stSidebar"] label {{ font-size: 14px !important; font-weight: 600 !important; color: #FFFFFF !important; }}
-[data-testid="stSidebar"] .stSelectbox div[data-baseweb="select"] span,
-[data-testid="stSidebar"] .stMultiSelect [data-baseweb="tag"] span {{
-    font-size: 13px !important; color: #1A1A1A !important;
+
+/* Filter section labels — large, white, clearly readable */
+[data-testid="stSidebar"] label,
+[data-testid="stSidebar"] .stSlider label,
+[data-testid="stSidebar"] .stMultiSelect label,
+[data-testid="stSidebar"] .stSelectbox label,
+[data-testid="stSidebar"] .stCheckbox label,
+[data-testid="stSidebar"] p {{
+    font-size: 15px !important;
+    font-weight: 600 !important;
+    color: #FFFFFF !important;
+    letter-spacing: 0.15px !important;
+    opacity: 1 !important;
 }}
+
+/* Slider tick values (2000, 2024 etc.) */
+[data-testid="stSidebar"] [data-testid="stTickBar"],
+[data-testid="stSidebar"] [data-testid="stTickBar"] *,
+[data-testid="stSidebar"] .stSlider div,
+[data-testid="stSidebar"] .stSlider span,
+[data-testid="stSidebar"] .stSlider p {{
+    font-size: 13px !important;
+    color: #CCEEDF !important;
+    opacity: 1 !important;
+}}
+
+/* Multiselect chips — replace Streamlit red with teal */
+[data-testid="stSidebar"] [data-baseweb="tag"] {{
+    background-color: {C['t600']} !important;
+    border: 1px solid rgba(255,255,255,0.25) !important;
+    border-radius: 5px !important;
+}}
+[data-testid="stSidebar"] [data-baseweb="tag"] span {{
+    color: #FFFFFF !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+}}
+[data-testid="stSidebar"] [data-baseweb="tag"] [role="button"],
+[data-testid="stSidebar"] [data-baseweb="tag"] svg {{
+    color: #FFFFFF !important;
+    fill: #FFFFFF !important;
+    opacity: 0.85;
+}}
+
+/* Multiselect and selectbox container — subtle tinted bg */
+[data-testid="stSidebar"] [data-baseweb="select"] > div {{
+    background-color: rgba(255,255,255,0.10) !important;
+    border-color: rgba(255,255,255,0.25) !important;
+    border-radius: 6px !important;
+}}
+[data-testid="stSidebar"] [data-baseweb="select"] span {{
+    color: #FFFFFF !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+}}
+
+/* Dropdown arrow icon */
+[data-testid="stSidebar"] [data-baseweb="select"] svg {{
+    fill: #FFFFFF !important;
+    color: #FFFFFF !important;
+}}
+
+/* Sidebar collapse/expand control */
 [data-testid="collapsedControl"] {{
     background: {C['t600']} !important;
     border-radius: 0 8px 8px 0 !important;
@@ -355,8 +416,9 @@ with st.sidebar:
 
     st.markdown("---")
     st.markdown(
-        f"<div style='font-size:11px;font-weight:700;letter-spacing:0.8px;"
-        f"text-transform:uppercase;color:#FFFFFF;margin-bottom:10px;'>"
+        "<div style='font-size:11px;font-weight:800;letter-spacing:1.6px;"
+        "text-transform:uppercase;color:#FFFFFF;margin-bottom:14px;"
+        "padding:0 0 6px;border-bottom:1px solid rgba(255,255,255,0.20);'>"
         "Dashboard Filters</div>",
         unsafe_allow_html=True)
 
@@ -373,7 +435,8 @@ with st.sidebar:
 
     st.markdown("---")
     st.markdown(
-        f"<div style='font-size:12px;color:#FFFFFF;line-height:2.0;'>"
+        "<div style='font-size:13px;color:#FFFFFF;line-height:2.2;"
+        "font-family:Inter,Arial,sans-serif;font-weight:500;'>"
         "🟢 FAO FishStat — real data<br>"
         "📊 DFO / CIRNAC — estimated<br>"
         "📅 Data through 2024</div>",
