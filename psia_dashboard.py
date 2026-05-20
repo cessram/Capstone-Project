@@ -232,7 +232,7 @@ html, body, [class*="css"] {{
 [data-testid="stSidebar"] .stSlider span,
 [data-testid="stSidebar"] .stSlider p {{
     font-size: 13px !important;
-    color: #CCEEDF !important;
+    color: #9FE1CB !important;
     opacity: 1 !important;
 }}
 
@@ -614,7 +614,7 @@ def generate_html_report():
 
 <div class="section">
   <h2>About This Report</h2>
-  <p style="font-family:Arial,sans-serif;font-size:13px;line-height:1.8;color:#444;">
+  <p style="font-family:Arial,sans-serif;font-size:13px;line-height:1.8;color:#444444;">
     This report was generated automatically from the PSIA Seaweed Industry Analytics Dashboard v7.0.
     Real production data is sourced from FAO FishStat. Permitting, social, and farm operation data
     are simulated from public DFO/CIRNAC reports and should be replaced with live data when available.
@@ -743,7 +743,7 @@ with tab1:
                              linecolor=AXIS_LINE["color"])
             fig.update_yaxes(tickfont=AXIS_FONT, gridcolor=GRID_COLOR,
                              linecolor=AXIS_LINE["color"])
-            fig.update_annotations(font=dict(size=12, color="#111111"))
+            fig.update_annotations(font=dict(size=12, color="#1A1A1A"))
             fig.update_traces(legendgrouptitle_text="")
             st.plotly_chart(fig, use_container_width=True)
 
@@ -771,7 +771,7 @@ with tab1:
             ))
             fig2.update_layout(**base_layout(370), legend=LEGEND_TOP)
             fig2 = style_axes(fig2, ytitle="M tonnes")
-            fig2.update_annotations(font=dict(size=12, color="#111111"))
+            fig2.update_annotations(font=dict(size=12, color="#1A1A1A"))
             fig2.update_traces(legendgrouptitle_text="")
             st.plotly_chart(fig2, use_container_width=True)
 
@@ -806,7 +806,7 @@ with tab1:
             fig3.update_yaxes(title_text="Volume (M t)", tickfont=AXIS_FONT,
                               gridcolor=GRID_COLOR, secondary_y=True,
                               title_font=AXIS_FONT)
-            fig3.update_annotations(font=dict(size=12, color="#111111"))
+            fig3.update_annotations(font=dict(size=12, color="#1A1A1A"))
             fig3.update_traces(legendgrouptitle_text="")
             st.plotly_chart(fig3, use_container_width=True)
 
@@ -839,7 +839,7 @@ with tab1:
             fig4.update_layout(**base_layout(310, dict(l=4,r=80,t=16,b=8)), showlegend=False)
             fig4 = style_axes(fig4, xtitle="USD per kg")
             fig4.update_yaxes(tickfont=dict(size=11, color="#1A1A1A"))
-            fig4.update_annotations(font=dict(size=12, color="#111111"))
+            fig4.update_annotations(font=dict(size=12, color="#1A1A1A"))
             fig4.update_traces(legendgrouptitle_text="")
             st.plotly_chart(fig4, use_container_width=True)
 
@@ -864,7 +864,7 @@ with tab1:
         ))
         fig5.update_layout(**base_layout(220, dict(l=4,r=4,t=12,b=4)), legend=LEGEND_TOP)
         fig5 = style_axes(fig5, ytitle="# Species")
-        fig5.update_annotations(font=dict(size=12, color="#111111"))
+        fig5.update_annotations(font=dict(size=12, color="#1A1A1A"))
         fig5.update_traces(legendgrouptitle_text="")
         st.plotly_chart(fig5, use_container_width=True)
 
@@ -913,7 +913,7 @@ with tab1:
             fig_cr.update_layout(**base_layout(200, dict(l=4,r=4,t=10,b=4)), legend=LEGEND_TOP)
             fig_cr = style_axes(fig_cr, ytitle="Share of global production (%)")
             fig_cr.update_yaxes(range=[0,105])
-            fig_cr.update_annotations(font=dict(size=12, color="#111111"))
+            fig_cr.update_annotations(font=dict(size=12, color="#1A1A1A"))
             fig_cr.update_traces(legendgrouptitle_text="")
             st.plotly_chart(fig_cr, use_container_width=True)
 
@@ -994,7 +994,7 @@ with tab2:
             marker=dict(line=dict(width=1.5, color="#FFFFFF")),
         )
         fig_tree.update_layout(**base_layout(360, dict(l=4,r=4,t=10,b=4)))
-        fig_tree.update_annotations(font=dict(size=12, color="#111111"))
+        fig_tree.update_annotations(font=dict(size=12, color="#1A1A1A"))
         fig_tree.update_traces(legendgrouptitle_text="")
         st.plotly_chart(fig_tree, use_container_width=True)
 
@@ -1029,7 +1029,7 @@ with tab2:
                     showarrow=False,
                 )],
             )
-            fig6.update_annotations(font=dict(size=12, color="#111111"))
+            fig6.update_annotations(font=dict(size=12, color="#1A1A1A"))
             fig6.update_traces(legendgrouptitle_text="")
             st.plotly_chart(fig6, use_container_width=True)
 
@@ -1051,7 +1051,7 @@ with tab2:
             fig7.update_layout(**base_layout(320, dict(l=4,r=80,t=10,b=4)), legend=LEGEND_TOP)
             fig7 = style_axes(fig7, xtitle="Million tonnes (cumulative)")
             fig7.update_yaxes(tickfont=dict(size=11, color="#1A1A1A"))
-            fig7.update_annotations(font=dict(size=12, color="#111111"))
+            fig7.update_annotations(font=dict(size=12, color="#1A1A1A"))
             fig7.update_traces(legendgrouptitle_text="")
             st.plotly_chart(fig7, use_container_width=True)
 
@@ -1076,7 +1076,7 @@ with tab2:
             fig8.update_xaxes(tickfont=AXIS_FONT, gridcolor=GRID_COLOR)
             fig8.update_yaxes(tickfont=AXIS_FONT, gridcolor=GRID_COLOR,
                               title_font=AXIS_FONT, title_text="M tonnes")
-            fig8.update_annotations(font=dict(size=12, color="#111111"))
+            fig8.update_annotations(font=dict(size=12, color="#1A1A1A"))
             fig8.update_traces(legendgrouptitle_text="")
             st.plotly_chart(fig8, use_container_width=True)
 
@@ -1096,7 +1096,7 @@ with tab2:
             fig9.update_xaxes(tickfont=AXIS_FONT, gridcolor=GRID_COLOR)
             fig9.update_yaxes(tickfont=AXIS_FONT, gridcolor=GRID_COLOR,
                               title_font=AXIS_FONT, title_text="M tonnes")
-            fig9.update_annotations(font=dict(size=12, color="#111111"))
+            fig9.update_annotations(font=dict(size=12, color="#1A1A1A"))
             fig9.update_traces(legendgrouptitle_text="")
             st.plotly_chart(fig9, use_container_width=True)
 
@@ -1122,7 +1122,7 @@ with tab2:
             fig18.update_yaxes(tickfont=AXIS_FONT, gridcolor=GRID_COLOR,
                                title_font=AXIS_FONT, title_text="Share (%)",
                                ticksuffix="%", range=[0,100])
-            fig18.update_annotations(font=dict(size=12, color="#111111"))
+            fig18.update_annotations(font=dict(size=12, color="#1A1A1A"))
             fig18.update_traces(legendgrouptitle_text="")
             st.plotly_chart(fig18, use_container_width=True)
 
@@ -1155,7 +1155,7 @@ with tab2:
                 ))
             fig19.update_layout(**base_layout(280, dict(l=4,r=4,t=10,b=4)), legend=LEGEND_BOTTOM)
             fig19 = style_axes(fig19, ytitle="USD / tonne")
-            fig19.update_annotations(font=dict(size=12, color="#111111"))
+            fig19.update_annotations(font=dict(size=12, color="#1A1A1A"))
             fig19.update_traces(legendgrouptitle_text="")
             st.plotly_chart(fig19, use_container_width=True)
 
@@ -1275,7 +1275,7 @@ with tab3:
                          gridcolor=GRID_COLOR, title_font=AXIS_FONT, secondary_y=False)
         fpm.update_yaxes(title_text="Permitted Farms", tickfont=AXIS_FONT,
                          gridcolor=GRID_COLOR, title_font=AXIS_FONT, secondary_y=True)
-        fpm.update_annotations(font=dict(size=12, color="#111111"))
+        fpm.update_annotations(font=dict(size=12, color="#1A1A1A"))
         fpm.update_traces(legendgrouptitle_text="")
         st.plotly_chart(fpm, use_container_width=True)
 
@@ -1296,7 +1296,7 @@ with tab3:
         fpm2.update_yaxes(title_text="Compliance (%)", tickfont=AXIS_FONT,
                           gridcolor=GRID_COLOR, title_font=AXIS_FONT,
                           secondary_y=True, range=[85, 100])
-        fpm2.update_annotations(font=dict(size=12, color="#111111"))
+        fpm2.update_annotations(font=dict(size=12, color="#1A1A1A"))
         fpm2.update_traces(legendgrouptitle_text="")
         st.plotly_chart(fpm2, use_container_width=True)
 
@@ -1321,7 +1321,7 @@ with tab3:
                           gridcolor=GRID_COLOR, title_font=AXIS_FONT, secondary_y=False)
     farm_fig.update_yaxes(title_text="Farm Area (ha)", tickfont=AXIS_FONT,
                           gridcolor=GRID_COLOR, title_font=AXIS_FONT, secondary_y=True)
-    farm_fig.update_annotations(font=dict(size=12, color="#111111"))
+    farm_fig.update_annotations(font=dict(size=12, color="#1A1A1A"))
     farm_fig.update_traces(legendgrouptitle_text="")
     st.plotly_chart(farm_fig, use_container_width=True)
 
@@ -1369,7 +1369,7 @@ with tab3:
         ))
         fso.update_layout(**base_layout(275), legend=LEGEND_TOP)
         fso = style_axes(fso)
-        fso.update_annotations(font=dict(size=12, color="#111111"))
+        fso.update_annotations(font=dict(size=12, color="#1A1A1A"))
         fso.update_traces(legendgrouptitle_text="")
         st.plotly_chart(fso, use_container_width=True)
 
@@ -1385,7 +1385,7 @@ with tab3:
         ))
         ftr.update_layout(**base_layout(275, dict(l=4,r=4,t=10,b=30)), showlegend=False)
         ftr = style_axes(ftr, ytitle="Individuals trained")
-        ftr.update_annotations(font=dict(size=12, color="#111111"))
+        ftr.update_annotations(font=dict(size=12, color="#1A1A1A"))
         ftr.update_traces(legendgrouptitle_text="")
         st.plotly_chart(ftr, use_container_width=True)
 
@@ -1476,7 +1476,7 @@ with tab4:
             xaxis=dict(tickfont=AXIS_FONT, title=dict(text="Year", font=AXIS_FONT)),
             yaxis=dict(tickfont=dict(size=11, color="#1A1A1A")),
         )
-        fig14.update_annotations(font=dict(size=12, color="#111111"))
+        fig14.update_annotations(font=dict(size=12, color="#1A1A1A"))
         fig14.update_traces(legendgrouptitle_text="")
         st.plotly_chart(fig14, use_container_width=True)
 
@@ -1515,7 +1515,7 @@ with tab4:
             fig20.update_xaxes(tickfont=AXIS_FONT, gridcolor=GRID_COLOR)
             fig20.update_yaxes(tickfont=AXIS_FONT, gridcolor=GRID_COLOR,
                                title_font=AXIS_FONT, title_text="M tonnes")
-            fig20.update_annotations(font=dict(size=12, color="#111111"))
+            fig20.update_annotations(font=dict(size=12, color="#1A1A1A"))
             fig20.update_traces(legendgrouptitle_text="")
             st.plotly_chart(fig20, use_container_width=True)
 
@@ -1556,7 +1556,7 @@ with tab4:
                                showlegend=False)
             fig24 = style_axes(fig24, xtitle="Price std dev (USD/kg)")
             fig24.update_yaxes(tickfont=dict(size=11, color="#1A1A1A"))
-            fig24.update_annotations(font=dict(size=12, color="#111111"))
+            fig24.update_annotations(font=dict(size=12, color="#1A1A1A"))
             fig24.update_traces(legendgrouptitle_text="")
             st.plotly_chart(fig24, use_container_width=True)
 
@@ -1601,7 +1601,7 @@ with tab4:
             fig21 = style_axes(fig21,
                 xtitle="Aquaculture Share of Total Seaweed Production (%)",
                 ytitle="Farmed Volume (tonnes, log scale)")
-            fig21.update_annotations(font=dict(size=12, color="#111111"))
+            fig21.update_annotations(font=dict(size=12, color="#1A1A1A"))
             fig21.update_traces(legendgrouptitle_text="")
             st.plotly_chart(fig21, use_container_width=True)
 
@@ -1639,7 +1639,7 @@ with tab4:
             fig25 = style_axes(fig25, xtitle="Top Species Share (%)")
             fig25.update_yaxes(tickfont=dict(size=11, color="#1A1A1A"))
             fig25.update_xaxes(range=[0,120])
-            fig25.update_annotations(font=dict(size=12, color="#111111"))
+            fig25.update_annotations(font=dict(size=12, color="#1A1A1A"))
             fig25.update_traces(legendgrouptitle_text="")
             st.plotly_chart(fig25, use_container_width=True)
 
@@ -1686,7 +1686,7 @@ with tab4:
             fig22 = style_axes(fig22,
                 xtitle=f"CAGR % (last {cagr_win} years)",
                 ytitle=f"Production {LY} (M tonnes, log)")
-            fig22.update_annotations(font=dict(size=12, color="#111111"))
+            fig22.update_annotations(font=dict(size=12, color="#1A1A1A"))
             fig22.update_traces(legendgrouptitle_text="")
             st.plotly_chart(fig22, use_container_width=True)
 
@@ -1745,7 +1745,7 @@ with tab4:
             fig26 = style_axes(fig26, xtitle="Data Completeness (%)")
             fig26.update_yaxes(tickfont=dict(size=11, color="#1A1A1A"))
             fig26.update_xaxes(range=[0,120])
-            fig26.update_annotations(font=dict(size=12, color="#111111"))
+            fig26.update_annotations(font=dict(size=12, color="#1A1A1A"))
             fig26.update_traces(legendgrouptitle_text="")
             st.plotly_chart(fig26, use_container_width=True)
 
