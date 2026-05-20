@@ -40,7 +40,7 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-GROQ_API_KEY = "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
+GROQ_API_KEY = "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"
 
 # ─────────────────────────────────────────────────────────────────────────────
 # FLOAT HELPER  — zero external packages, pure CSS :has() injection
