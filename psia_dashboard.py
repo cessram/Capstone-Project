@@ -41,7 +41,7 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-GROQ_API_KEY = "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"
+GROQ_API_KEY = "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"
 
 import uuid as _uuid
 def make_float(css_props: str):
