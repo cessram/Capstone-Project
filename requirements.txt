@@ -24,3 +24,4 @@ groq>=0.9.0
 
 # RAG knowledge base — TF-IDF retrieval
 scikit-learn>=1.3.0
+statsmodels
